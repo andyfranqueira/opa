@@ -1,0 +1,66 @@
+﻿@**
+    *  Copyright 2018 Andrew Franqueira
+    *
+    *  This file is part of Online Parish Administration.
+    *  Licensed under GNU General Public License 3.0 or later.
+    *  Some rights reserved. See COPYING.
+    *
+    *  @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
+*@
+
+@model IEnumerable<OPA.Models.PledgeViewModel>
+
+@{
+    ViewBag.Title = "Pledges";
+}
+
+<h1>@ViewBag.Title</h1>
+<hr />
+
+<table id="pledges" class="table table-hover table-responsive">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.DonorInfo)</th>
+            <th>@Html.DisplayNameFor(model => model.Year)</th>
+            <th>@Html.DisplayNameFor(model => model.Amount)</th>
+            <th>@Html.DisplayNameFor(model => model.Frequency)</th>
+            <th>@Html.DisplayNameFor(model => model.Fund)</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.DonorInfo)</td>
+                <td>@Html.DisplayFor(modelItem => item.Year)</td>
+                <td>@Html.DisplayFor(modelItem => item.Amount)</td>
+                <td>@Html.DisplayFor(modelItem => item.Frequency)</td>
+                <td>@Html.DisplayFor(modelItem => item.Fund)</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/datatables")
+    @Scripts.Render("~/bundles/datatables-buttons")
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $("#pledges").DataTable({
+                pageLength: 25,
+                ordering: false,
+                dom: "<'pull-left'f>t<'pull-left'l>pB",
+                buttons: [{
+                    extend: "csv",
+                    text: "Export data",
+                    title: "Pledge Summary",
+                    className: "pull-right btn btn-default"
+                }],
+                language: { search: "_INPUT_", searchPlaceholder: "Search..." }
+            });
+        });
+    </script>
+}

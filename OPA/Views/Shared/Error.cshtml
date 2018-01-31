@@ -1,0 +1,31 @@
+﻿@**
+    *  Copyright 2018 Andrew Franqueira
+    *
+    *  This file is part of Online Parish Administration.
+    *  Licensed under GNU General Public License 3.0 or later.
+    *  Some rights reserved. See COPYING.
+    *
+    *  @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
+*@
+
+@model HandleErrorInfo
+
+@{
+    ViewBag.Title = "Error";
+}
+
+<h1>@ViewBag.Title</h1>
+<hr />
+
+<div id="main-content" class="col-md-8">
+    @{
+        if (!string.IsNullOrEmpty(ViewBag.errorMessage))
+        {
+            <div class="alert alert-danger">@ViewBag.errorMessage</div>
+        }
+        else
+        {
+            <div class="alert alert-danger">An error occurred while processing your request.</div>
+        }
+    }
+</div>

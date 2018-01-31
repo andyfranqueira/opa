@@ -1,0 +1,73 @@
+﻿@**
+    *  Copyright 2018 Andrew Franqueira
+    *
+    *  This file is part of Online Parish Administration.
+    *  Licensed under GNU General Public License 3.0 or later.
+    *  Some rights reserved. See COPYING.
+    *
+    *  @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
+*@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Parish Administration: @ViewBag.Title</title>
+
+    @Styles.Render("~/Content/css")
+    @RenderSection("Styles", required: false)
+</head>
+
+<body>
+    <div class="navbar navbar-fixed-top">
+        @Html.Partial("_Header")
+    </div>
+    <div class="container body-content">
+        @RenderBody()
+        <div id="modal-container" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content"></div>
+            </div>
+        </div>
+    </div>
+    <footer>
+        @Html.Partial("_Footer")
+    </footer>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    <script src="https://donorbox.org/install-popup-button.js" type="text/javascript" defer></script>
+    <script> window.DonorBox = { widgetLinkClassName: 'custom-dbox-popup' } </script>
+    @RenderSection("Scripts", required: false)
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            // Initalize modal dialog
+            $("body").on("click", ".modal-link", function (e) {
+                e.preventDefault();
+                $(this).attr("data-target", "#modal-container");
+                $(this).attr("data-toggle", "modal");
+            });
+
+            // Attach listener to .modal-close-btn"s so that when the button is pressed the modal dialog disappears
+            $("body").on("click", ".modal-close-btn", function () {
+                $("#modal-container").modal("hide");
+            });
+
+            // Clear modal cache, so that new content can be loaded
+            $("#modal-container").on("hidden.bs.modal", function () {
+                $(this).removeData("bs.modal").find(".modal-content").empty();
+            });
+
+            $("#CancelModal").on("click", function () {
+                return false;
+            });
+
+            var hash = window.location.hash;
+            hash && $("ul.nav a[href='" + hash + "']").tab("show");
+        });
+    </script>
+</body>
+</html>

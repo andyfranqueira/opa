@@ -1,0 +1,139 @@
+﻿@**
+    *  Copyright 2018 Andrew Franqueira
+    *
+    *  This file is part of Online Parish Administration.
+    *  Licensed under GNU General Public License 3.0 or later.
+    *  Some rights reserved. See COPYING.
+    *
+    *  @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
+*@
+
+@{
+    ViewBag.Title = "ProfilePhoto";
+}
+
+@Styles.Render("~/Content/jcrop")
+
+<h1>Upload a new profile photo</h1>
+<hr />
+
+@{
+    Html.RenderPartial("_ProfilePhoto");
+}
+<div class="col-md-6">
+    <p>@Html.ActionLink("Start over", "ProfilePhoto", "People", new { id = ViewBag.PersonId }, new { @class = "btn btn-default" })</p>
+    <p>@Html.ActionLink("Return to profile", "Edit", "People", new { id = ViewBag.PersonId }, new { @class = "btn btn-default" })</p>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jcrop")
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var maxSize = 15;
+            var coords;
+            $("#image-max-size").html(maxSize);
+
+            // Initialize
+            $(function () {
+
+                // Set image upload form
+                $("#image-upload-form").ajaxForm({
+                    beforeSend: function () {
+                        updateProgress(0);
+                        $("#image-upload-form").addClass("hidden");
+                    },
+                    uploadProgress: function (event, position, total, percentComplete) {
+                        updateProgress(percentComplete);
+                    },
+                    success: function (data) {
+                        updateProgress(100);
+                        if (data.success === false) {
+                            $("#status").html(data.errorMessage);
+                        } else {
+                            var image = $("#crop-image-target");
+                            image.attr("src", data.imageSrc);
+                            $("#image-upload-box").addClass("hidden");
+                            $("#image-crop-box").removeClass("hidden");
+
+                            image.Jcrop({
+                                onChange: keepCoords,
+                                onSelect: keepCoords,
+                                aspectRatio: 1
+                            }, function () {
+                                var size = Math.min(image.width(), image.height());
+                                this.animateTo([0, 0, size, size]);
+                            });
+                        }
+                    },
+                    complete: function () { }
+                });
+
+                // Set image upload trigger
+                $("#image-upload-form input:file").on("change", function (e) {
+                    var files = e.currentTarget.files;
+                    for (var x in files) {
+                        if (files.hasOwnProperty(x)) {
+                            if (files[x].name !== "item" && typeof files[x].name !== "undefined") {
+                                if (files[x].size <= maxSize * 51840 * 51840) {
+                                    $("#image-upload-form .upload-file-notice").removeClass("bg-danger");
+                                    $("#image-upload-form").submit();
+                                } else {
+                                    $("#image-upload-form .upload-file-notice").addClass("bg-danger");
+                                }
+                            }
+                        }
+                    }
+                });
+            });
+
+            // Set up loading bar
+            function updateProgress(percentComplete) {
+                $(".upload-percent-bar").width(percentComplete + "%");
+                $(".upload-percent-value").html(percentComplete + "%");
+
+                if (percentComplete === 0) {
+                    $("#upload-status").empty();
+                    $(".upload-progress").removeClass("hidden");
+                }
+            }
+
+            // Track jcrop coordinates
+            function keepCoords(c) {
+                coords = c;
+            }
+
+            // Configure save button
+            $("#save-image").click(function () {
+                var url = '@Url.Action("SaveProfilePhoto", "People")';
+                var image = $("#crop-image-target");
+                $("#image-crop-box button").addClass("disabled");
+
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    traditional: true,
+                    data: {
+                        id: @ViewBag.PersonId,
+                        x: coords.x,
+                        y: coords.y,
+                        width: coords.x2 - coords.x,
+                        height: coords.y2 - coords.y,
+                        imageSrc: image.attr("src")
+                    }
+                }).done(function (data) {
+                    if (data.success === true) {
+                        $("#image-result img").attr("src", data.imageSrc);
+                        $("#image-result").removeClass("hidden");
+                        $("#image-crop-box").addClass("hidden");
+                    } else {
+                        alert(data.errorMessage);
+                    }
+                }).fail(function () {
+                    alert("Cannot upload image at this time");
+                });
+            });
+        });
+    </script>
+}

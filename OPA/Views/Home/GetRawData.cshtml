@@ -1,0 +1,68 @@
+﻿@**
+    *  Copyright 2018 Andrew Franqueira
+    *
+    *  This file is part of Online Parish Administration.
+    *  Licensed under GNU General Public License 3.0 or later.
+    *  Some rights reserved. See COPYING.
+    *
+    *  @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
+*@
+
+@{
+    ViewBag.Title = "OPA Raw Data";
+}
+
+<h1>Don't Panic: @ViewBag.Title</h1>
+<hr />
+
+<!-- Nav tabs -->
+<div class="clearfix"></div>
+<ul class="nav nav-tabs" role="tablist">
+    @foreach (KeyValuePair<string, List<List<string>>> table in ViewBag.Tables)
+    {
+        <li role="presentation" class="tab-header"><a href="#@table.Key" aria-controls="@table.Key" role="tab" data-toggle="tab">@table.Key</a></li>
+    }
+</ul>
+
+<!-- Tab panes -->
+<div class="tab-content">
+    @foreach (KeyValuePair<string, List<List<string>>> table in ViewBag.Tables)
+    {
+        <div role="tabpanel" id="@table.Key" class="tab-pane">
+            <table id="@table.Key-table" class="table table-hover table-responsive fit-table">
+                <thead>
+                    <tr>
+                        @foreach (var cell in table.Value[0])
+                        {
+                            <th>@cell</th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var row in table.Value.Skip(1))
+                    {
+                        <tr>
+                            @foreach (var cell in row)
+                            {
+                                <td><div style="max-width: 180px;">@cell</div></td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/datatables")
+    @Scripts.Render("~/bundles/datatables-buttons")
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".table").DataTable({ dom: "t<'pull-left'l>pB", buttons: [{ extend: "csv", className: "pull-right btn btn-default" }] });
+            $(".tab-header").first().addClass("active");
+            $(".tab-pane").first().addClass("active");
+        });
+    </script>
+}

@@ -1,0 +1,47 @@
+﻿@**
+    *  Copyright 2018 Andrew Franqueira
+    *
+    *  This file is part of Online Parish Administration.
+    *  Licensed under GNU General Public License 3.0 or later.
+    *  Some rights reserved. See COPYING.
+    *
+    *  @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
+*@
+
+@{
+    ViewBag.Title = "Sts. Kosmas & Damianos";
+}
+
+<h1>@ViewBag.Title</h1>
+<hr />
+
+<div id="main-content">
+    <div class="col-md-6">
+        <h2>People &amp; Organizations</h2>
+        <p>@Html.ActionLink("List People", "Index", "People", null, new {@class = "btn btn-default"})</p>
+        <p>@Html.ActionLink("List Couples", "Index", "Couple", null, new {@class = "btn btn-default"})</p>
+        <p>@Html.ActionLink("List Organizations", "Index", "Organization", null, new {@class = "btn btn-default"})</p>
+        <br/>
+        <h2>Financials</h2>
+        <p>@Html.ActionLink("Electronic Payments", "Index", "Payment", null, new {@class = "btn btn-default"})</p>
+        <p>@Html.ActionLink("Batch Donations", "BatchDonations", "Financial", null, new {@class = "btn btn-default"})</p>
+        <p>@Html.ActionLink("List Donations", "Donations", "Financial", null, new {@class = "btn btn-default"})</p>
+        <p>@Html.ActionLink("List Pledges", "Pledges", "Financial", null, new {@class = "btn btn-default"})</p>
+        <br/>
+    </div>
+
+    <div class="col-md-6">
+        <h2>Payment Processors</h2>
+        <p><a href="https://donorbox.org/org_session/new" target="_blank" class="btn btn-default">DonorBox</a></p>
+        <p><a href="https://dashboard.stripe.com/login" target="_blank" class="btn btn-default">Stripe</a></p>
+        <p><a href="https://squareup.com/login" target="_blank" class="btn btn-default">Square</a></p>
+        @if (ViewBag.IsOwnerAdmin)
+        {
+            <br/>
+            <h2>Administrator Functions</h2>
+            <p>@Html.ActionLink("Manage Users", "ManageUsers", "Manage", null, new { @class = "btn btn-default" })</p>
+            <p>@Html.ActionLink("Manage Value Sets", "ValueSets", "Home", null, new { @class = "btn btn-default" })</p>
+            <p>@Html.ActionLink("Don't Panic", "GetRawData", "Home", null, new { @class = "btn btn-default" })</p>
+        }
+    </div>
+</div>

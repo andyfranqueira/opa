@@ -1,0 +1,72 @@
+﻿@**
+    *  Copyright 2018 Andrew Franqueira
+    *
+    *  This file is part of Online Parish Administration.
+    *  Licensed under GNU General Public License 3.0 or later.
+    *  Some rights reserved. See COPYING.
+    *
+    *  @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
+*@
+
+@model IEnumerable<OPA.Models.DonationViewModel>
+
+@{
+    ViewBag.Title = "Donations";
+}
+
+<h1>@ViewBag.Title</h1>
+<hr />
+
+<table id="donations" class="table table-hover table-responsive">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.DonorInfo)</th>
+            <th>@Html.DisplayNameFor(model => model.DonationDate)</th>
+            <th>@Html.DisplayNameFor(model => model.Amount)</th>
+            <th>@Html.DisplayNameFor(model => model.Fund)</th>
+            <th class="fit">@Html.DisplayNameFor(model => model.Designation)</th>
+            <th>@Html.DisplayNameFor(model => model.RecurringPayment)</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr data-toggle="tooltip" data-html="true" data-original-title="@item.PaymentInfo">
+                <td>@Html.DisplayFor(modelItem => item.DonorInfo)</td>
+                <td>@Html.DisplayFor(modelItem => item.DonationDate)</td>
+                <td>@Html.DisplayFor(modelItem => item.Amount)</td>
+                <td>@Html.DisplayFor(modelItem => item.Fund)</td>
+                <td>@Html.DisplayFor(modelItem => item.Designation)</td>
+                <td>@Html.DisplayFor(modelItem => item.RecurringPayment)</td>
+                <td>@Html.ActionLink("Receipt", "DonationReceipt", new { id = item.Id }, new { @class = "btn btn-default" })</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/datatables")
+    @Scripts.Render("~/bundles/datatables-buttons")
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $("#donations").DataTable({
+                pageLength: 25,
+                ordering: false,
+                dom: "<'pull-left'f>t<'pull-left'l>pB",
+                buttons: [{
+                    extend: "csv",
+                    text: "Export data",
+                    title: "Pledge Summary",
+                    className: "pull-right btn btn-default"
+                }],
+                language: { search: "_INPUT_", searchPlaceholder: "Search..." }
+            });
+
+            $("[data-toggle='tooltip']").tooltip();
+        });
+    </script>
+}

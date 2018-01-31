@@ -1,0 +1,38 @@
+﻿@**
+    *  Copyright 2018 Andrew Franqueira
+    *
+    *  This file is part of Online Parish Administration.
+    *  Licensed under GNU General Public License 3.0 or later.
+    *  Some rights reserved. See COPYING.
+    *
+    *  @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
+*@
+
+<div class="col-md-6">
+    <section id="image-upload-box">
+        @using (Ajax.BeginForm("_ProfilePhoto", "Image",
+            new AjaxOptions() { HttpMethod = "POST" },
+            new { enctype = "multipart/form-data", id = "image-upload-form" }))
+        {
+            @Html.AntiForgeryToken()
+            <label for="file-upload" class="btn btn-default">Upload an image</label>
+            <input id="file-upload" type="file" name="files" class="hidden" />
+            <p>Maximum Size: <span id="image-max-size"></span> MB</p>
+        }
+        <div class="upload-progress col-md-6 hidden">
+            <div class="upload-percent-value pull-left">0%</div>
+            <div class="upload-percent-bar pull-left"></div>
+        </div>
+        <div id="upload-status"></div>
+    </section>
+
+    <section id="image-crop-box" class="hidden">
+        <div><img src="" id="crop-image-target" alt="Uploaded image" /></div><br />
+        <div><button id="save-image" type="button" class="btn btn-default">Save Image</button></div>
+    </section>
+
+    <div id="image-result" class="hidden">
+        <h2>New profile photo applied!</h2>
+        <img src="" alt="Final Image" />
+    </div>
+</div>

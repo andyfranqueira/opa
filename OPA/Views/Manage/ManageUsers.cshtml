@@ -1,0 +1,79 @@
+﻿@**
+    *  Copyright 2018 Andrew Franqueira
+    *
+    *  This file is part of Online Parish Administration.
+    *  Licensed under GNU General Public License 3.0 or later.
+    *  Some rights reserved. See COPYING.
+    *
+    *  @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
+*@
+
+@model IEnumerable<OPA.Models.UserViewModel>
+
+@{
+    ViewBag.Title = "Manage application users";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>@ViewBag.Title</h1>
+<hr />
+
+<table id="user-accounts" class="table table-hover table-responsive">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.UserName)</th>
+            <th>@Html.DisplayNameFor(model => model.PersonName)</th>
+            <th class="hidden-xs">@Html.DisplayNameFor(model => model.EmailConfirmed)</th>
+            <th class="hidden-xs">@Html.DisplayNameFor(model => model.Admin)</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.UserName)</td>
+                <td>@Html.DisplayFor(modelItem => item.PersonName)</td>
+                <td class="hidden-xs">
+                    @if (item.EmailConfirmed)
+                    {
+                        <input checked="checked" class="check-box" disabled="disabled" type="checkbox">
+                    }
+                </td>
+                <td class="hidden-xs">
+                    @if (item.Admin)
+                    {
+                        <input checked="checked" class="check-box" disabled="disabled" type="checkbox">
+                    }
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "EditUser", "Manage", new { id = item.Id }, new { @class = "btn btn-default modal-link" })
+                    @using (Html.BeginForm("Delete", "Manage", null, FormMethod.Post, new { style = "display: inline-block" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.Hidden("userId", item.Id)
+                        <input type="submit" value="Delete" class="btn btn-default" onclick="return confirm('Delete user, are you sure?')" />
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/datatables")
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#user-accounts").dataTable({
+                pageLength: 25,
+                paging: false,
+                dom: "<'pull-left'f>t<'pull-left'l>p",
+                language: { search: "_INPUT_", searchPlaceholder: "Search..." },
+                columnDefs: [{ "orderable": false, "targets": [2, 3, 4] }]
+            });
+        });
+    </script>
+}

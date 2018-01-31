@@ -1,0 +1,456 @@
+﻿@**
+    *  Copyright 2018 Andrew Franqueira
+    *
+    *  This file is part of Online Parish Administration.
+    *  Licensed under GNU General Public License 3.0 or later.
+    *  Some rights reserved. See COPYING.
+    *
+    *  @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
+*@
+
+@using OPA.Entities
+@model OPA.Models.PersonViewModel
+
+@{
+    ViewBag.Title = "Edit Person";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<p class="pull-right">
+    @if (User.IsInRole("Admin"))
+    {
+        <span id="sensitive-data" class="btn btn-default">Hide sensitive data</span>
+        @Html.ActionLink("Back to list of people", "Index", null, new { @class = "btn btn-default" })
+    }
+    else
+    {
+        <a href="https://donorbox.org/stewardship?first_name=@Model.FirstName&last_name=@Model.LastName&email=@User.Identity.Name" class="custom-dbox-popup btn btn-default">Make a donation</a>
+    }
+</p>
+@if (Model.ProfilePhoto != null)
+{
+    <a href='@Url.Action("ProfilePhoto", "People", new { id = Model.Id })'><img src="@Model.ProfilePhoto" class="thumbnail pull-left" alt="Profile photo"></a>
+}
+<h1>@Model.FullName</h1>
+
+<!-- Nav tabs -->
+<div class="clearfix"></div>
+<ul class="nav nav-tabs" role="tablist">
+    <li role="presentation" class="active"><a href="#person" aria-controls="person" role="tab" data-toggle="tab">Personal Details</a></li>
+    <li role="presentation"><a href="#contacts" aria-controls="contacts" role="tab" data-toggle="tab">Contact Details</a></li>
+    <li role="presentation"><a href="#pledges" aria-controls="pledges" role="tab" data-toggle="tab">Pledges</a></li>
+    <li role="presentation"><a href="#donations" aria-controls="donations" role="tab" data-toggle="tab">Donations</a></li>
+</ul>
+
+    <!-- Tab panes -->
+<div class="tab-content">
+    <div role="tabpanel" class="tab-pane active" id="person">
+        <div>&nbsp;</div>
+
+        <div class="col-md-6">
+            <div class="form-horizontal">
+
+                @if (ViewBag.Success != null && ViewBag.Success)
+                {
+                    <div id="success-alert" class="alert alert-success alert-dismissable">
+                        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                        <strong>Success!</strong>
+                    </div>
+                }
+
+                @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "person-form" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    @Html.HiddenFor(model => model.Id)
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.FirstName, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-6">
+                            @Html.EditorFor(model => model.FirstName, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.FirstName, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.MiddleName, htmlAttributes: new { @class = "control-label col-md-4" })
+                            <div class="col-md-6">
+                                @Html.EditorFor(model => model.MiddleName, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.MiddleName, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.LastName, htmlAttributes: new { @class = "control-label col-md-4" })
+                            <div class="col-md-6">
+                                @Html.EditorFor(model => model.LastName, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.LastName, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Sex, htmlAttributes: new { @class = "control-label col-md-4" })
+                            <div class="col-md-6">
+                                @Html.EnumDropDownListFor(model => model.Sex, new { @class = "form-control" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.DateOfBirth, htmlAttributes: new { @class = "control-label col-md-4" })
+                            <div class="col-md-6">
+                                <div class="input-group date">
+                                    @Html.TextBoxFor(model => model.DateOfBirth, "{0:MM/dd/yyyy}", new { id = "date-of-birth", @class = "form-control" })
+                                    <span id="date-icon" class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                                    @Html.ValidationMessageFor(model => model.DateOfBirth, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+
+                        if (User.IsInRole("Admin"))
+                         {
+                             <div class="form-group">
+                                 @Html.LabelFor(model => model.Orthodox, htmlAttributes: new {@class = "control-label col-md-4 col-xs-4"})
+                                 <div class="col-md-2 col-xs-2">
+                                     <div class="checkbox">
+                                         @Html.EditorFor(model => model.Orthodox)
+                                         @Html.ValidationMessageFor(model => model.Orthodox, "", new {@class = "text-danger"})
+                                     </div>
+                                 </div>
+
+                                 @Html.LabelFor(model => model.Active, htmlAttributes: new {@class = "control-label col-md-2 col-xs-2"})
+                                 <div class="col-md-2 col-xs-2">
+                                     <div class="checkbox">
+                                         @Html.EditorFor(model => model.Active)
+                                         @Html.ValidationMessageFor(model => model.Active, "", new {@class = "text-danger"})
+                                     </div>
+                                 </div>
+                             </div>
+                        }
+                        else
+                        {
+                            @Html.HiddenFor(model => model.Orthodox)
+                            @Html.HiddenFor(model => model.Active)
+                        }
+
+                    <div class="form-group">
+                            <input type="submit" value="Save changes" class="btn btn-default">
+                        </div>
+                }
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <hr class="hidden-md hidden-lg" />
+            <table class="table table-hover">
+                <tbody>
+                    @if (Model.Parents.Any())
+                    {
+                        <tr><th colspan="6" class="text-center"><em>Parents</em></th></tr>
+                        foreach (var parent in Model.Parents)
+                        {
+                            <tr>
+                                <td>@Html.DisplayFor(modelItem => parent.FullName)</td>
+                                <td class="fit">@Html.ActionLink("View/Edit", "Edit", new { id = parent.Id }, new { @class = "btn btn-default" })</td>
+                            </tr>
+                        }
+                    }
+
+                    @if (Model.Spouse != null)
+                    {
+                        <tr><th colspan="6" class="text-center"><em>Spouse</em></th></tr>
+                            <tr>
+                                <td>@Html.DisplayFor(modelItem => Model.Spouse.FullName)</td>
+                                <td class="fit">@Html.ActionLink("View/Edit", "Edit", new { id = Model.Spouse.Id }, new { @class = "btn btn-default" })</td>
+                            </tr>
+                    }
+
+                    @if (Model.Children.Any())
+                    {
+                        <tr><th colspan="6" class="text-center"><em>Children</em></th></tr>
+                        foreach (var child in Model.Children)
+                        {
+                            <tr>
+                                <td>@Html.DisplayFor(modelItem => child.FullName)</td>
+                                <td class="fit">@Html.ActionLink("View/Edit", "Edit", new { id = child.Id }, new { @class = "btn btn-default" })</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+            <p class="pull-right">
+                @if (User.IsInRole("Admin") && (Model.Sex == Sex.Male || Model.Sex == Sex.Female))
+                {
+                    if (Model.Spouse == null)
+                    {
+                        @Html.ActionLink("Add a spouse", "Create", "Couple", null, new { @class = "btn btn-default" })
+                    }
+                    if ((Model.DateOfBirth ?? DateTime.Today.AddYears(-18)) <= DateTime.Today.AddYears(-18))
+                    {
+                        <span></span>
+                            @Html.ActionLink("Add a child record", "Create", new { parentId = Model.Id }, new { @class = "btn btn-default" })
+                    }
+                }
+                else
+                {
+                    @Html.ActionLink("Add family members", "RequestSupport", "Manage", new { personId = Model.Id, request = "Family" }, new { @class = "btn btn-default modal-link" })
+                }
+            </p>
+        </div>
+    </div>
+
+    <div role="tabpanel" class="tab-pane" id="contacts">
+        <p class="pull-right">
+            @Html.ActionLink("Add a contact", "Create", "Contact", new { personId = Model.Id }, new { @class = "btn btn-default modal-link" })
+        </p>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Contact Type</th>
+                    <th>Contact Details</th>
+                    @if (Model.Contacts.Any())
+                    {
+                        <th>Action</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Contacts != null)
+                {
+                    foreach (var contact in Model.Contacts)
+                    {
+                        <tr>
+                            <td>@contact.ContactType</td>
+                            <td>@contact.ContactDetails</td>
+                            <td>
+                                @Html.ActionLink("Edit", "Edit", "Contact", new { id = contact.Id }, new { @class = "btn btn-default modal-link" })
+                                @using (Html.BeginForm("Delete", "Contact", null, FormMethod.Post, new { style = "display: inline-block" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    @Html.Hidden("contactId", contact.Id)
+                                    <input type="submit" value="Delete" class="btn btn-default" onclick="return confirm('Delete contact, are you sure?')" />
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+        <div class="clearfix">&nbsp;</div>
+
+        <hr />
+        <p class="pull-right">
+            @Html.ActionLink("Add a contact address", "CreateAddress", "Contact", new { personId = Model.Id }, new { @class = "btn btn-default modal-link" })
+        </p>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>@Html.DisplayNameFor(model => model.Addresses[0].AddressLine)</th>
+                    <th>@Html.DisplayNameFor(model => model.Addresses[0].City)</th>
+                    <th>@Html.DisplayNameFor(model => model.Addresses[0].State)</th>
+                    <th>@Html.DisplayNameFor(model => model.Addresses[0].PostalCode)</th>
+                    <th class="hidden-xs">@Html.DisplayNameFor(model => model.Addresses[0].Country)</th>
+                    @if (Model.Addresses.Any())
+                    {
+                        <th>Action</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Addresses != null)
+                {
+                    foreach (var address in Model.Addresses)
+                    {
+                        <tr>
+                            <td>@Html.DisplayFor(modelItem => address.AddressLine)</td>
+                            <td>@Html.DisplayFor(modelItem => address.City)</td>
+                            <td>@Html.DisplayFor(modelItem => address.State)</td>
+                            <td>@Html.DisplayFor(modelItem => address.PostalCode)</td>
+                            <td class="hidden-xs">@Html.DisplayFor(modelItem => address.Country)</td>
+                            <td>
+                                @Html.ActionLink("Correct", "EditAddress", "Contact", new { id = address.Id }, new { @class = "btn btn-default modal-link" })
+                                @using (Html.BeginForm("DeleteAddress", "Contact", null, FormMethod.Post, new { style = "display: inline-block" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    @Html.Hidden("contactAddressId", address.Id)
+                                    <input type="submit" value="Delete" class="btn btn-default" onclick="return confirm('Delete contact address, are you sure?')" />
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div role="tabpanel" class="tab-pane" id="pledges">
+        <p class="pull-right">
+            @Html.ActionLink("Make a pledge", "CreatePledge", "Financial", new { personId = Model.Id }, new { @class = "btn btn-default modal-link" })
+        </p>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>@Html.DisplayNameFor(model => model.Pledges[0].Year)</th>
+                    <th>@Html.DisplayNameFor(model => model.Pledges[0].Amount)</th>
+                    <th>@Html.DisplayNameFor(model => model.Pledges[0].Frequency)</th>
+                    <th>@Html.DisplayNameFor(model => model.Pledges[0].Fund)</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Pledges != null)
+                {
+                    foreach (var pledge in Model.Pledges)
+                    {
+                        <tr>
+                            <td>@Html.DisplayFor(modelItem => pledge.Year)</td>
+                            <td>
+                                <span class="sensitive-data">@Html.DisplayFor(modelItem => pledge.Amount)</span>
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <span class="mask-data">$***</span>
+                                }
+                            </td>
+                            <td>@Html.DisplayFor(modelItem => pledge.Frequency)</td>
+                            <td>@pledge.Fund</td>
+                            <td>
+                                @Html.ActionLink("Edit", "EditPledge", "Financial", new { id = pledge.Id, personId = Model.Id }, new { @class = "btn btn-default modal-link" })
+                                @using (Html.BeginForm("DeletePledge", "Financial", null, FormMethod.Post, new { style = "display: inline-block" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    @Html.Hidden("pledgeId", pledge.Id)
+                                    @Html.Hidden("personId", Model.Id)
+                                    <input type="submit" value="Delete" class="btn btn-default" onclick="return confirm('Delete pledge, are you sure?')" />
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div role="tabpanel" class="tab-pane" id="donations">
+        <p class="pull-right">
+            @if (User.IsInRole("Admin"))
+            {
+                @Html.ActionLink("Record a donation", "CreateDonation", "Financial", new { personId = Model.Id }, new { @class = "btn btn-default modal-link" })
+            }
+            else
+            {
+                if (Model.Donations.Any(d => d.RecurringPayment))
+                {
+                    <a href="https://donorbox.org/user_session/new" class="btn btn-default" target="_blank">Manage recurring payments</a>
+                }
+                <a href="https://donorbox.org/stewardship?first_name=@Model.FirstName&last_name=@Model.LastName&email=@User.Identity.Name" class="custom-dbox-popup btn btn-default">Make a donation</a>
+            }
+        </p>
+
+        <table id="donations-table" class="table table-hover">
+            <thead>
+                <tr>
+                    <th>@Html.DisplayNameFor(model => model.Donations[0].DonationDate)</th>
+                    <th>@Html.DisplayNameFor(model => model.Donations[0].Amount)</th>
+                    <th>@Html.DisplayNameFor(model => model.Donations[0].Fund)</th>
+                    <th>@Html.DisplayNameFor(model => model.Donations[0].Designation)</th>
+                    @if (User.IsInRole("Admin") && Model.Donations.Any())
+                    {
+                        <th>Action</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Donations != null)
+                {
+                    foreach (var donation in Model.Donations)
+                    {
+                        var details = donation.PaymentInfo 
+                            + (!string.IsNullOrWhiteSpace(donation.CheckNumber) ? "Check Number: " + donation.CheckNumber : "");
+
+                        <tr data-toggle="tooltip" data-html="true" data-original-title="@details">
+                            <td>@Html.DisplayFor(modelItem => donation.DonationDate)</td>
+                            <td>
+                                <span class="sensitive-data">@Html.DisplayFor(modelItem => donation.Amount)</span>
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <span class="mask-data">$***</span>
+                                }
+                            </td>
+                            <td>@donation.Fund</td>
+                            <td>@Html.DisplayFor(modelItem => donation.Designation)</td>
+                            @if (User.IsInRole("Admin") && Model.Donations.Any())
+                            {
+                                <td>
+                                    @if (donation.PaymentInfo != null)
+                                    {
+                                        <span class="alert alert-btn">ePayment</span>
+                                    }
+                                    else
+                                    {
+                                        @Html.ActionLink("Edit", "EditDonation", "Financial", new { id = donation.Id, personId = Model.Id }, new { @class = "btn btn-default modal-link" })
+                                        <span></span>
+                                        using (Html.BeginForm("DeleteDonation", "Financial", null, FormMethod.Post, new { style = "display: inline-block" }))
+                                        {
+                                            @Html.AntiForgeryToken()
+                                            @Html.Hidden("donationId", donation.Id)
+                                            @Html.Hidden("personId", Model.Id)
+                                            <input type="submit" value="Delete" class="btn btn-default" onclick="return confirm('Delete donation, are you sure?')" />
+                                        }
+                                    }
+                                </td>
+                            }
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/datatables")
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $("#date-of-birth").datepicker({
+                format: "mm/dd/yyyy",
+                container: $(".bootstrap-iso form").length > 0 ? $(".bootstrap-iso form").parent() : "div.date",
+                todayHighlight: true,
+                autoclose: true,
+                startView: "years",
+                defaultViewDate: {year: 1980}
+            });
+
+            $("#date-icon").click(function () {
+                $("#date-of-birth").select();
+            });
+
+            $("#person-form").validate({
+                rules: {
+                    LastName: { required: true },
+                    FirstName: { required: true }
+                }
+            });
+
+            $("#success-alert").fadeTo(1000, 500).slideUp(500, function () {
+                $("#success-alert").slideUp(500);
+            });
+
+            $("#sensitive-data").click(function () {
+                $("#sensitive-data").remove();
+                $(".sensitive-data").hide();
+                $(".mask-data").show();
+            });
+
+            $("[data-toggle='tooltip']").tooltip();
+
+            $("#donations-table").dataTable({
+                pageLength: 25,
+                ordering: false,
+                dom: "<'pull-left'f>t<'pull-left'l>p",
+                language: { search: "_INPUT_", searchPlaceholder: "Search..." }
+            });
+        });
+    </script>
+}

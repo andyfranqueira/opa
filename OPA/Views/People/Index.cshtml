@@ -1,0 +1,69 @@
+﻿@**
+    *  Copyright 2018 Andrew Franqueira
+    *
+    *  This file is part of Online Parish Administration.
+    *  Licensed under GNU General Public License 3.0 or later.
+    *  Some rights reserved. See COPYING.
+    *
+    *  @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
+*@
+
+@model IEnumerable<OPA.Models.PersonViewModel>
+
+@{
+    ViewBag.Title = "People";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<p class="pull-right">
+    @Html.ActionLink("Add a new person", "Create", null, new {@class = "btn btn-default"})
+</p>
+
+<h1>@ViewBag.Title</h1>
+<hr />
+
+<table id="people" class="table table-hover table-responsive">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.FullName)</th>
+            <th>@Html.DisplayNameFor(model => model.Sex)</th>
+            <th>@Html.DisplayNameFor(model => model.DateOfBirth)</th>
+            <th class="hidden-xs">@Html.DisplayNameFor(model => model.Orthodox)</th>
+            <th class="hidden-xs">@Html.DisplayNameFor(model => model.Active)</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LastName),
+                    @Html.DisplayFor(modelItem => item.FirstName)
+                </td>
+                <td>@Html.DisplayFor(modelItem => item.Sex)</td>
+                <td>@Html.DisplayFor(modelItem => item.DateOfBirth)</td>
+                <td class="hidden-xs">@Html.DisplayFor(modelItem => item.Orthodox)</td>
+                <td class="hidden-xs">@Html.DisplayFor(modelItem => item.Active)</td>
+                <td class="fit">@Html.ActionLink("View/Edit", "Edit", new { id = item.Id }, new { @class = "btn btn-default" })</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/datatables")
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#people").dataTable({
+                pageLength: 25,
+                dom: "<'pull-left'f>t<'pull-left'l>p",
+                language: { search: "_INPUT_", searchPlaceholder: "Search..." },
+                columnDefs: [{ "orderable": false, "targets": [3, 4, 5] }]
+            });
+        });
+    </script>
+}

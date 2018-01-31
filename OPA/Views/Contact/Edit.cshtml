@@ -1,0 +1,88 @@
+﻿@**
+    *  Copyright 2018 Andrew Franqueira
+    *
+    *  This file is part of Online Parish Administration.
+    *  Licensed under GNU General Public License 3.0 or later.
+    *  Some rights reserved. See COPYING.
+    *
+    *  @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
+*@
+
+@model OPA.Models.ContactViewModel
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">&times;</button>
+    <h3 class="modal-title">Edit Contact</h3>
+</div>
+
+<div class="modal-body">
+    @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "contact-form" }))
+            {
+        @Html.AntiForgeryToken()
+
+        <div class="form-horizontal">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @Html.HiddenFor(model => model.Id)
+            @if (Model.PersonId != null)
+            {
+                @Html.HiddenFor(model => model.PersonId)
+            }
+            @if (Model.OrganizationId != null)
+            {
+                @Html.HiddenFor(model => model.OrganizationId)
+            }
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.ContactType, htmlAttributes: new { @class = "control-label col-md-4" })
+                <div class="col-md-5">
+                    @Html.DropDownListFor(model => model.ContactType, (List<SelectListItem>)ViewBag.ContactTypes, "", new { @class = "form-control" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.ContactDetails, htmlAttributes: new { @class = "control-label col-md-4" })
+                <div class="col-md-6">
+                    @Html.EditorFor(model => model.ContactDetails, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.ContactDetails, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-8">
+                    <input type="submit" value="Save" class="btn btn-default" />
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $.validator.addMethod("phoneUS", function (number, element) {
+            number = number.replace(/\s+/g, "");
+            return this.optional(element) || number.length > 9 && number.match(/^\(\d{3}\) ?\d{3}-\d{4}$/);
+        }, "Please enter a phone number in the format (999) 999-9999");
+
+        $("#contact-form").validate({
+            rules: {
+                ContactType: { required: true },
+                ContactDetails: {
+                    required: true,
+                    email: { depends: function () { return $("#ContactType option:selected").text().includes("Email"); } },
+                    phoneUS: { depends: function () { return $("#ContactType option:selected").text().includes("Phone"); } }
+                }
+            }
+        });
+
+        $("#ContactDetails").on("blur", function () {
+            if ($("#ContactType option:selected").text().includes("Phone")) {
+                var number = $(this).val();
+                number = number.replace(/[^\d]/g, '').replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
+                $(this).val(number);
+            }
+        });
+    });
+</script>

@@ -1,0 +1,27 @@
+﻿@**
+    *  Copyright 2018 Andrew Franqueira
+    *
+    *  This file is part of Online Parish Administration.
+    *  Licensed under GNU General Public License 3.0 or later.
+    *  Some rights reserved. See COPYING.
+    *
+    *  @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
+*@
+
+@{
+    ViewBag.Title = "Info";
+}
+
+<h1>@ViewBag.Title</h1>
+<hr />
+
+<div id="main-content" class="col-md-8">
+    <div>@Html.Raw(ViewBag.Message)</div>
+
+    @if (ViewBag.DonateEmail != null)
+    {
+        <p>In the meantime if you would like to make a donation please click on the link below.</p>
+        <a href="https://donorbox.org/stewardship?email=@ViewBag.DonateEmail" class="custom-dbox-popup btn btn-default">Make a Donation</a>
+    }
+</div>
+

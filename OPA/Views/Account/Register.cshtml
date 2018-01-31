@@ -1,0 +1,91 @@
+﻿@**
+    *  Copyright 2018 Andrew Franqueira
+    *
+    *  This file is part of Online Parish Administration.
+    *  Licensed under GNU General Public License 3.0 or later.
+    *  Some rights reserved. See COPYING.
+    *
+    *  @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
+*@
+
+@model OPA.Models.RegisterViewModel
+@{
+    ViewBag.Title = "Register";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>@ViewBag.Title</h1>
+<hr />
+<p>Please enter your details below to register for a new account.</p>
+
+<div class="col-md-6">
+    @using (Html.BeginForm("Register", "Account", FormMethod.Post, new {@class = "form-horizontal", role = "form", id = "register-form"}))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary("", new {@class = "text-danger"})
+        <div class="form-group">
+            @Html.LabelFor(m => m.FirstName, new {@class = "control-label col-md-4"})
+            <div class="col-md-8">
+                @Html.TextBoxFor(m => m.FirstName, new {@class = "form-control"})
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.LastName, new {@class = "control-label col-md-4"})
+            <div class="col-md-8">
+                @Html.TextBoxFor(m => m.LastName, new {@class = "form-control"})
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.Email, new {@class = "col-md-4 control-label"})
+            <div class="col-md-8">
+                @Html.TextBoxFor(m => m.Email, new {@class = "form-control"})
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.Password, new {@class = "col-md-4 control-label"})
+            <div class="col-md-8">
+                @Html.PasswordFor(m => m.Password, new {@class = "form-control", data_toggle = "tooltip", title = "Passwords must be at least 6 characters: include uppercase, lowercase, and a number." })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.ConfirmPassword, new {@class = "col-md-4 control-label"})
+            <div class="col-md-8">
+                @Html.PasswordFor(m => m.ConfirmPassword, new {@class = "form-control", data_toggle = "password" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-4 col-md-8">
+                <input type="submit" class="btn btn-default" value="Register"/>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("[data-toggle='tooltip']").tooltip();
+
+            $.validator.methods.email = function (value) {
+                return value.match(/[a-z]+@@[a-z]+\.[a-z]+/);
+            }
+
+            $.extend(jQuery.validator.messages, { equalTo: "The passwords entered do not match." });
+
+            $("#register-form").validate({
+                rules: {
+                    FirstName: { required: true },
+                    LastName: { required: true },
+                    Email: { required: true, email: true },
+                    Password: { required: true },
+                    ConfirmPassword: { required: true, equalTo: "#Password" }
+                }
+            });
+        });
+    </script>
+}

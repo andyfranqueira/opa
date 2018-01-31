@@ -1,0 +1,72 @@
+﻿@**
+    *  Copyright 2018 Andrew Franqueira
+    *
+    *  This file is part of Online Parish Administration.
+    *  Licensed under GNU General Public License 3.0 or later.
+    *  Some rights reserved. See COPYING.
+    *
+    *  @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
+*@
+
+@model OPA.Models.CoupleViewModel
+
+@{
+    ViewBag.Title = "Create Couple";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<p class="pull-right">
+    @Html.ActionLink("Back to list of couples", "Index", null, new { @class = "btn btn-default" })
+</p>
+
+<h1>@ViewBag.Title</h1>
+<hr />
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "couple-form" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.Active, new { Value = "true" })
+
+    <div class="form-horizontal">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.Husband, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-4">
+                @Html.DropDownList("HusbandId", (List<SelectListItem>)ViewBag.EligibleMales, "Select Husband", new { @class = "form-control" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Wife, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-4">
+                @Html.DropDownList("WifeId", (List<SelectListItem>)ViewBag.EligibleFemales, "Select Wife", new { @class = "form-control" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Create couple" class="btn btn-default" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                @Html.ActionLink("Add a new person", "Create", "People", null, new { @class = "btn btn-default" })
+            </div>
+        </div>
+    </div>
+}
+
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#couple-form").validate({
+                rules: {
+                    HusbandId: { required: true },
+                    WifeId: { required: true }
+                }
+            });
+        });
+    </script>
+}

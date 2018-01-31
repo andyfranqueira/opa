@@ -1,0 +1,146 @@
+﻿@**
+    *  Copyright 2018 Andrew Franqueira
+    *
+    *  This file is part of Online Parish Administration.
+    *  Licensed under GNU General Public License 3.0 or later.
+    *  Some rights reserved. See COPYING.
+    *
+    *  @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
+*@
+
+@model OPA.Models.BatchDonationsViewModel
+
+@{
+    ViewBag.Title = "Record Donations";
+    ViewData["DonorList"] = Model.Donors;
+}
+
+<h1>@ViewBag.Title</h1>
+<hr />
+
+<div class="squeeze-contents">
+    @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "donations-form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="form-group clearfix">
+            <div class="col-xs-3">
+                <label class="control-label">Donor</label>
+            </div>
+            <div class="col-xs-2">
+                <label class="control-label">Donation Date</label>
+            </div>
+            <div class="col-xs-1">
+                <label class="control-label">Amount</label>
+            </div>
+            <div class="col-xs-3">
+                <label class="control-label">Fund</label>
+            </div>
+            <div class="col-xs-2">
+                <label class="control-label">Designation</label>
+            </div>
+            <div class="col-xs-1">
+                <label class="control-label">Check #</label>
+            </div>
+        </div>
+
+        for (int i = 0; i < Model.Donations.Count; i++)
+        {
+            <div class="form-group clearfix donations">
+                <div class="col-xs-3">
+                    @Html.DropDownListFor(model => model.Donations[i].PersonId, Model.Donors, "", new { @class = "form-control person-id" })
+                </div>
+
+                <div class="col-xs-2 date donate-date">
+                    @Html.TextBoxFor(model => model.Donations[i].DonationDate, "{0:MM/dd/yyyy}", new { @class = "form-control donation-date" })
+                </div>
+
+                <div class="col-xs-1">
+                    @Html.EditorFor(model => model.Donations[i].Amount, new { htmlAttributes = new { @class = "form-control amount" } })
+                </div>
+
+                <div class="col-xs-3">
+                    @Html.DropDownListFor(model => model.Donations[i].Fund, (List<SelectListItem>)ViewBag.FundList, "", new { @class = "form-control fund" })
+                </div>
+
+                <div class="col-xs-2">
+                    @Html.EditorFor(model => model.Donations[i].Designation, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Donations[i].Designation, "", new { @class = "text-danger" })
+                </div>
+
+                <div class="col-xs-1">
+                    @Html.EditorFor(model => model.Donations[i].CheckNumber, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+            </div>
+        }
+
+        <div class="form-group">
+            <div class="pull-right">
+                <h3>Total Amount: $<span id="totalvalue"></span></h3>
+            </div>
+            <div class="clearfix"></div>
+            <div class="pull-right">
+                <input id="add-row" type="submit" value="Add a row" class="btn btn-default" formnovalidate="formnovalidate" />
+                <input id="complete" type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </div>
+    }
+</div>
+
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $(".donation-date").datepicker({
+                format: "mm/dd/yyyy",
+                todayHighlight: true,
+                autoclose: true
+            });
+
+            $("#donations-form").validate();
+
+            $(".donation-date").each(function () {
+                $(this).rules('add', {
+                    required: { depends: function () { return $("#" + $(this).attr("id").replace("DonationDate", "PersonId")).val() !== "" } }
+                });
+            });
+
+            $(".amount").each(function () {
+                $(this).rules('add', {
+                    required: { depends: function () { return $("#" + $(this).attr("id").replace("Amount", "PersonId")).val() !== "" } },
+                    number: true, min: .01
+                });
+            });
+
+            $(".fund").each(function () {
+                $(this).rules('add', {
+                    required: { depends: function () { return $("#" + $(this).attr("id").replace("Fund", "PersonId")).val() !== "" } }
+                });
+            });
+
+            $("#add-row").click(function () {
+                $("form").attr("action", "@Url.Action("BatchDonations", "Financial")");
+            });
+
+            $("#complete").click(function () {
+                $("form").attr("action", "@Url.Action("CreateBatchDonations", "Financial")");
+            });
+
+            $(".amount").change(function () {
+                var total = (0);
+
+                $(".amount").each(function () {
+                    if ($(this).val() !== "") {
+                        total += Number($(this).val());
+                    }
+                });
+
+                $('#totalvalue').html(total.toFixed(2));
+            });
+
+            $(".amount").change();
+        });
+    </script>
+}

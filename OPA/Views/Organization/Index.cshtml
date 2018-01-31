@@ -1,0 +1,62 @@
+﻿@**
+    *  Copyright 2018 Andrew Franqueira
+    *
+    *  This file is part of Online Parish Administration.
+    *  Licensed under GNU General Public License 3.0 or later.
+    *  Some rights reserved. See COPYING.
+    *
+    *  @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
+*@
+
+@model IEnumerable<OPA.Models.OrganizationViewModel>
+
+@{
+    ViewBag.Title = "Organizations";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<p class="pull-right">
+    @Html.ActionLink("Create organization", "Create", null, new { @class = "btn btn-default" })
+</p>
+
+<h1>@ViewBag.Title</h1>
+<hr />
+
+<table id="organizations" class="table table-hover">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.Name)</th>
+            <th>@Html.DisplayNameFor(model => model.Active)</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.Name)</td>
+                <td>@Html.DisplayFor(modelItem => item.Active)</td>
+                <td class="fit">@Html.ActionLink("View/Edit", "Edit", new { id = item.Id }, new { @class = "btn btn-default" })</td>
+            </tr>
+        }
+    </tbody>
+
+</table>
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/datatables")
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#organizations").dataTable({
+                pageLength: 25,
+                paging: false,
+                dom: "<'pull-left'f>t<'pull-left'l>p",
+                language: { search: "_INPUT_", searchPlaceholder: "Search..." },
+                columnDefs: [{ "orderable": false, "targets": [1, 2] }]
+            });
+        });
+    </script>
+}

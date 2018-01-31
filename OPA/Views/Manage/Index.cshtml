@@ -1,0 +1,40 @@
+﻿@**
+    *  Copyright 2018 Andrew Franqueira
+    *
+    *  This file is part of Online Parish Administration.
+    *  Licensed under GNU General Public License 3.0 or later.
+    *  Some rights reserved. See COPYING.
+    *
+    *  @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
+*@
+
+@model OPA.Models.IndexViewModel
+@{
+    ViewBag.Title = "Manage my account";
+}
+
+<h1>@ViewBag.Title</h1>
+<hr />
+
+<div class="text-success">@ViewBag.StatusMessage</div>
+<div id="main-content" class="col-md-6">
+    <ul>
+        <li>Welcome, your user name is: <strong><em>@Model.UserName</em></strong></li>
+        @if (Model.PersonName != null)
+            {
+            <li>Your parishoner profile is: <strong><em>@Model.PersonName</em></strong></li>
+        }
+        else
+        {
+            <li>Your account has not yet been linked to a parishoner profile, our admin team will configure your account ASAP.</li>
+        }
+    </ul>
+    <br />
+    <div>
+        @if (Model.PersonName != null)
+            {
+            @Html.ActionLink("View my profile", "Edit", "People", new { id = Model.PersonId }, new { @class = "btn btn-default" })
+        }
+        @(Model.HasPassword ? Html.ActionLink("Change my password", "ChangePassword", null, new { @class = "btn btn-default" }) : Html.ActionLink("Create a password", "SetPassword", null, new { @class = "btn btn-default" }))
+    </div>
+</div>

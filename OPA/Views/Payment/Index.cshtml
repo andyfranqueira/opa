@@ -1,0 +1,105 @@
+﻿@**
+    *  Copyright 2018 Andrew Franqueira
+    *
+    *  This file is part of Online Parish Administration.
+    *  Licensed under GNU General Public License 3.0 or later.
+    *  Some rights reserved. See COPYING.
+    *
+    *  @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
+*@
+
+@model IEnumerable<OPA.Models.PaymentViewModel>
+
+@{
+    ViewBag.Title = "Payments";
+}
+
+<p class="pull-right">
+    <span id="unprocessed-only" class="btn btn-default">Hide processed payments</span>
+    @Html.ActionLink("Check for new payments", "Check", null, new { @class = "btn btn-default" })
+</p>
+
+<h1>@ViewBag.Title</h1>
+<hr />
+
+<table id="payments" class="table table-hover table-responsive">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.Source)</th>
+            <th>@Html.DisplayNameFor(model => model.DonorName)</th>
+            <th>@Html.DisplayNameFor(model => model.PaymentMethod)</th>
+            <th style="max-width: 15%;">@Html.DisplayNameFor(model => model.PaymentDetails)</th>
+            <th>@Html.DisplayNameFor(model => model.Amount)</th>
+            <th>@Html.DisplayNameFor(model => model.Fee)</th>
+            <th>@Html.DisplayNameFor(model => model.Net)</th>
+            <th>@Html.DisplayNameFor(model => model.RecurringDonation)</th>
+            <th>@Html.DisplayNameFor(model => model.TransactionDate)</th>
+            <th>@Html.DisplayNameFor(model => model.PostedDate)</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model)
+        {
+            var processed = (item.DonationRecorded) ? "processed" : string.Empty;
+
+            <tr class="@processed">
+                <td>@Html.DisplayFor(modelItem => item.Source)</td>
+                <td>@Html.DisplayFor(modelItem => item.DonorName)</td>
+                <td>@Html.DisplayFor(modelItem => item.PaymentMethod)</td>
+                <td>@Html.DisplayFor(modelItem => item.PaymentDetails)</td>
+                <td>@Html.DisplayFor(modelItem => item.Amount)</td>
+                <td>@Html.DisplayFor(modelItem => item.Fee)</td>
+                <td>@Html.DisplayFor(modelItem => item.Net)</td>
+                <td>@Html.DisplayFor(modelItem => item.RecurringDonation)</td>
+                <td>@Html.DisplayFor(modelItem => item.TransactionDate)</td>
+                <td>@Html.DisplayFor(modelItem => item.PostedDate)</td>
+                <td>
+                    @if (item.DonationRecorded)
+                    {
+                        <p class="alert alert-btn break-line">Donation Recorded</p>
+                    }
+                    else if (item.PostedDate <= DateTime.Now)
+                    {
+                        @Html.ActionLink("Record Donation", "CreateDonation", "Payment", new { id = item.Id }, new { @class = "btn btn-default modal-link break-line" })
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/datatables")
+    @Scripts.Render("~/bundles/datatables-buttons")
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $("#payments").DataTable({
+                pageLength: 25,
+                ordering: false,
+                dom: "<'pull-left'f>t<'pull-left'l>pB",
+                buttons: [{
+                    extend: "csv",
+                    text: "Export data",
+                    title: "Payment Summary",
+                    className: "pull-right btn btn-default"
+                }],
+                language: { search: "_INPUT_", searchPlaceholder: "Search..." }
+            });
+
+            $("#unprocessed-only").click(function () {
+                $(".processed").toggle();
+                if ($("#unprocessed-only").text() === "Hide processed payments") {
+                    $("#unprocessed-only").text("Show processed payments");
+                } else {
+                    $("#unprocessed-only").text("Hide processed payments");
+                }
+            });
+
+        });
+    </script>
+}
