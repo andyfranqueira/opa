@@ -8,6 +8,7 @@
 //   @license GPL-3.0+ http://spdx.org/licenses/GPL-3.0+
 // </copyright>
 
+using System;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -78,25 +79,17 @@ namespace OPA.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
         {
-            if (!ModelState.IsValid)
+            var user = await UserManager.FindByNameAsync(model.Email.ToLower());
+            if (!ModelState.IsValid || user == null)
             {
                 return View(model);
             }
 
             // Require the user to have a confirmed email before they can log on.
-            var user = await UserManager.FindByNameAsync(model.Email.ToLower());
-            if (user != null)
+            if (!await UserManager.IsEmailConfirmedAsync(user.Id))
             {
-                if (!await UserManager.IsEmailConfirmedAsync(user.Id))
-                {
-                    await SendEmailConfirmationTokenAsync(user.Id, "Confirm your account");
-                    return Error("You must have a confirmed email to log on. " + "The confirmation token has been resent to your email account.");
-                }
-
-                if (user.PersonId == null)
-                {
-                    await UserHelper.GetMatchingPerson(UserManager, user);
-                }
+                await SendEmailConfirmationTokenAsync(user.Id, "Confirm your account");
+                return Error("You must have a confirmed email to log on. " + "The confirmation token has been resent to your email account.");
             }
 
             var result = await SignInManager.PasswordSignInAsync(model.Email.ToLower(), model.Password, model.RememberMe, true);
@@ -105,9 +98,20 @@ namespace OPA.Controllers
             switch (result)
             {
                 case SignInStatus.Success:
+                    if (user.PersonId == null)
+                    {
+                        user.PersonId = UserHelper.FindUserPerson(user);
+                    }
+
+                    user.LastLogin = DateTime.Now;
+                    user.LoginCount = (user.LoginCount ?? 0) + 1;
+                    await UserManager.UpdateAsync(user);
+
                     return RedirectToLocal(returnUrl);
+
                 case SignInStatus.LockedOut:
                     return View("Lockout");
+
                 default:
                     ModelState.AddModelError(string.Empty, "Invalid login attempt.");
                     return View(model);
@@ -140,14 +144,16 @@ namespace OPA.Controllers
                                       + "Your account must be confirmed before you can log in.</p>";
 
                     // Look for a matching person record and link to the user account if one is found
-                    var person = await UserHelper.GetMatchingPerson(UserManager, user);
+                    user.PersonId = UserHelper.FindUserPerson(user);
+                    await UserManager.UpdateAsync(user);
 
                     // Inform the admins of the new user account
                     var emailBody = "A new OPA account has been created for: " + model.Email.ToLower() + "<br/>"
                                     + "Name: " + model.FirstName + " " + model.LastName + "<br/><br/>";
 
-                    if (person != null)
+                    if (user.PersonId != null)
                     {
+                        var person = Database.People.Find(user.PersonId);
                         emailBody = emailBody
                                     + "A matching person record was found and assigned.<br/>"
                                     + "Person: " + Utilities.FormatName(person);
@@ -155,7 +161,8 @@ namespace OPA.Controllers
                     else
                     {
                         emailBody = emailBody
-                                    + "No matching person record was found.";
+                                    + "No matching person record was found.<br/><br/>"
+                                    + Url.Action("Create", "People", null, protocol: Request.Url?.Scheme);
                     }
 
                     await Utilities.AsyncSendEmail(UserHelper.GetAdminEmails(), "New user account", emailBody);

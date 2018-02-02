@@ -198,6 +198,17 @@ namespace OPA.BusinessLogic
             return new Bitmap(new MemoryStream(imageBytes));
         }
 
+        public static byte[] GetFile(string file)
+        {
+            using (var stream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Delete | FileShare.ReadWrite))
+            {
+                var length = System.Convert.ToInt32(stream.Length);
+                var data = new byte[length];
+                stream.Read(data, 0, length);
+                return data;
+            }
+        }
+
         [SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
         public static byte[] GenerateWordDocument(string template, Dictionary<string, string> fieldValues)
         {

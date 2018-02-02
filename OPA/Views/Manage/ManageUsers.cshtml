@@ -23,8 +23,10 @@
         <tr>
             <th>@Html.DisplayNameFor(model => model.UserName)</th>
             <th>@Html.DisplayNameFor(model => model.PersonName)</th>
-            <th class="hidden-xs">@Html.DisplayNameFor(model => model.EmailConfirmed)</th>
-            <th class="hidden-xs">@Html.DisplayNameFor(model => model.Admin)</th>
+            <th>@Html.DisplayNameFor(model => model.LastLogin)</th>
+            <th>@Html.DisplayNameFor(model => model.LoginCount)</th>
+            <th>@Html.DisplayNameFor(model => model.EmailConfirmed)</th>
+            <th>@Html.DisplayNameFor(model => model.Admin)</th>
             <th>Action</th>
         </tr>
     </thead>
@@ -35,13 +37,15 @@
             <tr>
                 <td>@Html.DisplayFor(modelItem => item.UserName)</td>
                 <td>@Html.DisplayFor(modelItem => item.PersonName)</td>
-                <td class="hidden-xs">
+                <td>@Html.DisplayFor(modelItem => item.LastLogin)</td>
+                <td class="fit">@Html.DisplayFor(modelItem => item.LoginCount)</td>
+                <td class="fit">
                     @if (item.EmailConfirmed)
                     {
                         <input checked="checked" class="check-box" disabled="disabled" type="checkbox">
                     }
                 </td>
-                <td class="hidden-xs">
+                <td class="fit">
                     @if (item.Admin)
                     {
                         <input checked="checked" class="check-box" disabled="disabled" type="checkbox">
@@ -72,7 +76,7 @@
                 paging: false,
                 dom: "<'pull-left'f>t<'pull-left'l>p",
                 language: { search: "_INPUT_", searchPlaceholder: "Search..." },
-                columnDefs: [{ "orderable": false, "targets": [2, 3, 4] }]
+                columnDefs: [{ "orderable": false, "targets": [4, 5, 6] }]
             });
         });
     </script>

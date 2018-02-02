@@ -12,6 +12,8 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
+using log4net.Appender;
+using OPA.BusinessLogic;
 using OPA.Models;
 
 namespace OPA.Controllers
@@ -22,7 +24,7 @@ namespace OPA.Controllers
         // GET: /Home
         public ActionResult Index()
         {
-            Logger.Info("Home admin? " + User.IsInRole("Admin"));
+            Logger.Info(User.IsInRole("Admin") ? "Admin" : "User");
 
             if (!User.IsInRole("Admin"))
             {
@@ -31,6 +33,14 @@ namespace OPA.Controllers
 
             ViewBag.IsOwnerAdmin = UserHelper.IsOwnerAdmin();
             return View();
+        }
+
+        // GET: /Home/LogFile
+        [Authorize(Roles = "Admin")]
+        public FileResult LogFile()
+        {
+            var logfile = Logger.Logger.Repository.GetAppenders().OfType<RollingFileAppender>().FirstOrDefault()?.File;
+            return logfile == null ? null : File(Utilities.GetFile(logfile), "text/plain", "Opa.log");
         }
 
         // GET: /Home/ValueSets

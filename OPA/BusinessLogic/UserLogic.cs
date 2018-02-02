@@ -10,7 +10,6 @@
 
 using System.Linq;
 using System.Security.Principal;
-using System.Threading.Tasks;
 using System.Web;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
@@ -76,22 +75,16 @@ namespace OPA.BusinessLogic
             return false;
         }
 
-        public async Task<Person> GetMatchingPerson(ApplicationUserManager userManager, ApplicationUser user)
+        public int? FindUserPerson(ApplicationUser user)
         {
-            // Is the user account linked to an existing person record?
-            if (user.PersonId == null)
+            // Check if the email address belongs to an existing person
+            var existingContacts = Database.Contacts.Where(c => c.ContactDetails.ToLower().Equals(user.Email.ToLower())).ToList();
+            if (existingContacts.Count == 1)
             {
-                // Check if the email address belongs to an existing person
-                var existingContacts = Database.Contacts.Where(c => c.ContactDetails.ToLower().Equals(user.Email.ToLower())).ToList();
-                if (existingContacts.Count == 1)
-                {
-                    user.PersonId = existingContacts[0].PersonId;
-                    await userManager.UpdateAsync(user);
-                    return Database.People.Find(user.PersonId);
-                }
+                return existingContacts[0].PersonId;
             }
 
-            return user.Person;
+            return null;
         }
 
         private string AdminRoleId()

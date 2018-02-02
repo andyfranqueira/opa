@@ -8,6 +8,7 @@
 //   @license GPL-3.0+ http://spdx.org/licenses/GPL-3.0+
 // </copyright>
 
+using System;
 using System.ComponentModel.DataAnnotations;
 using OPA.BusinessLogic;
 using OPA.Entities;
@@ -80,14 +81,21 @@ namespace OPA.Models
 
         [Display(Name = "User Name")]
         public string UserName { get; set; }
+        public int? PersonId { get; set; }
+
+        [Display(Name = "Assigned Person")]
+        public string PersonName { get; set; }
+
+        [Display(Name = "Last Login")]
+        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}")]
+        public DateTime? LastLogin { get; set; }
+
+        [Display(Name = "Login Count")]
+        public int? LoginCount { get; set; }
 
         [Display(Name = "Email Confirmed")]
         public bool EmailConfirmed { get; set; }
         public bool Admin { get; set; }
-        public int? PersonId { get; set; }
-
-        [Display(Name = "Assigned Person Record")]
-        public string PersonName { get; set; }
 
         private void MapToUserViewModel(ApplicationUser user, UserLogic userHelper)
         {
@@ -95,6 +103,8 @@ namespace OPA.Models
             UserName = user.UserName;
             EmailConfirmed = user.EmailConfirmed;
             Admin = userHelper.IsAdmin(user);
+            LastLogin = user.LastLogin;
+            LoginCount = user.LoginCount;
             PersonId = user.PersonId;
             PersonName = (user.PersonId != null) ? new PersonViewModel(user.Person).FullName : string.Empty;
         }

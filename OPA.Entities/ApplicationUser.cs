@@ -8,6 +8,7 @@
 //   @license GPL-3.0+ http://spdx.org/licenses/GPL-3.0+
 // </copyright>
 
+using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
@@ -17,6 +18,8 @@ namespace OPA.Entities
 {
     public class ApplicationUser : IdentityUser
     {
+        public DateTime? LastLogin { get; set; }
+        public int? LoginCount { get; set; }
         public int? PersonId { get; set; }
 
         public virtual Person Person { get; set; }
