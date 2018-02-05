@@ -224,8 +224,8 @@ namespace OPA.Controllers
 
         // POST: /Manage/EditUser/5
         [HttpPost]
-        [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
+        [ValidateAntiForgeryToken]
         public ActionResult EditUser([Bind(Include = "Id,UserName,EmailConfirmed,Admin,PersonId")] UserViewModel model)
         {
             if (!ModelState.IsValid)
@@ -246,8 +246,8 @@ namespace OPA.Controllers
         }
 
         // POST: /Manage/Delete/5
-        [Authorize(Roles = "Admin")]
         [HttpPost, ActionName("Delete")]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(string userId)
         {

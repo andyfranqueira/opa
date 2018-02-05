@@ -56,29 +56,21 @@ namespace OPA.Controllers
         }
 
         // GET: /People/Create
+        [Authorize(Roles = "Admin")]
         public ActionResult Create(int? parentId)
         {
-            if (!User.IsInRole("Admin"))
-            {
-                return Error("You must be an admin to create person records.");
-            }
-
             var model = new PersonViewModel { ParentId = parentId, ForCouple = PersonHelper.IsMarried(parentId) };
             return View(model);
         }
 
         // POST: /People/Create
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,LastName,FirstName,MiddleName,Sex,DateOfBirth,Orthodox,Active,ParentId,ForCouple")] PersonViewModel model)
         {
             if (ModelState.IsValid)
             {
-                if (!User.IsInRole("Admin"))
-                {
-                    return Error("You must be an admin to create person records.");
-                }
-
                 var person = model.MapToPerson();
 
                 if (model.ParentId != null)

@@ -22,6 +22,7 @@ namespace OPA.Controllers
     public class FinancialController : BaseController
     {
         // GET: /Financial/Pledges
+        [Authorize(Roles = "Admin")]
         public ActionResult Pledges()
         {
             var pledges = Database.Pledges
@@ -116,6 +117,7 @@ namespace OPA.Controllers
         }
 
         // GET: /Financial/Pledges
+        [Authorize(Roles = "Admin")]
         public ActionResult Donations()
         {
             var donations = Database.Donations
@@ -143,6 +145,7 @@ namespace OPA.Controllers
 
         // POST: /Donation/CreateDonation
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public ActionResult CreateDonation([Bind(Include = "Id,DonationDate,Amount,Fund,Designation,CheckNumber,PersonId,OrganizationId")] DonationViewModel model)
         {
@@ -169,6 +172,7 @@ namespace OPA.Controllers
 
         // POST: /Financial/BatchDonations
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public ActionResult BatchDonations(BatchDonationsViewModel model)
         {
@@ -180,6 +184,7 @@ namespace OPA.Controllers
 
         // POST: /Financial/CreateBatchDonations
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public ActionResult CreateBatchDonations(BatchDonationsViewModel model)
         {
@@ -218,6 +223,7 @@ namespace OPA.Controllers
 
         // POST: /Financial/EditDonation
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public ActionResult EditDonation([Bind(Include = "Id,DonationDate,Amount,Fund,Designation,CheckNumber,PersonId,OrganizationId")] DonationViewModel model)
         {
@@ -239,6 +245,7 @@ namespace OPA.Controllers
 
         // POST: /Financial/DeleteDonation/5
         [HttpPost, ActionName("DeleteDonation")]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteDonation(int donationId, int? personId)
         {

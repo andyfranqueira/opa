@@ -228,7 +228,7 @@ namespace OPA.BusinessLogic
                     foreach (var fieldValue in fieldValues)
                     {
                         var regexText = new Regex(fieldValue.Key);
-                        text = regexText.Replace(text, fieldValue.Value);
+                        text = regexText.Replace(text, fieldValue.Value ?? string.Empty);
                     }
 
                     using (var streamWriter = new StreamWriter(document.MainDocumentPart.GetStream(FileMode.Create)))
