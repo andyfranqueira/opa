@@ -7,7 +7,12 @@ Released under GNU General Public License v3.0
 
 The Web.config file contains a few setting that should be populated before first use:
 
+    <add key="org:Name" value="" />
+    <add key="app:Name" value="" />
+
+    <add key="admin:Name" value="" />
     <add key="admin:Email" value="" />
+
     <add key="smtp:Host" value="" />
     <add key="smtp:Port" value="" />
     <add key="smtp:Account" value="" />
