@@ -1,7 +1,7 @@
-<h1>Online Parish Administration</h1>
+<h1>OPA: Online Parish Administration</h1>
 
 A lightweight, CRM web application, designed for tracking church members & donations.  Admin accounts can manage member information, electronic payments, and track donations.  Members can access their own records online and view/update their information.
-Designed to be extremely simple, the application can be tailored for use with any faith group, non-profit, clubs, etc.
+Designed to be extremely simple, the application can be easily tailored for use by any faith group, non-profit, club, etc.
 
 Released under GNU General Public License v3.0
 
