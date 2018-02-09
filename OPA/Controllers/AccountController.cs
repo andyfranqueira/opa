@@ -1,7 +1,7 @@
-﻿// <copyright file="AccountController.cs" company="Anargyroi Development">
+﻿// <copyright file="AccountController.cs" company="The OPA Project">
 //   Copyright 2018 Andrew Franqueira
 //  
-//   This file is part of Online Parish Administration.
+//   This file is part of OPA.
 //   Licensed under GNU General Public License 3.0 or later. 
 //   Some rights reserved. See COPYING.
 //  
@@ -286,7 +286,7 @@ namespace OPA.Controllers
         {
             string code = await UserManager.GenerateEmailConfirmationTokenAsync(userId);
             var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = userId, code = code }, protocol: Request.Url?.Scheme);
-            var message = "Thank you for registering for an Online Parish Administration account.<br/>"
+            var message = "Thank you for registering for an account with " + Utilities.AppName + ".<br/>"
                           + "Please confirm your email account by clicking the following link:<br/>"
                           + callbackUrl + "<br/><br/>"
                           + "Your account must be confirmed before you can log in.";

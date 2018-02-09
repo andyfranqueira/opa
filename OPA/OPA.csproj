@@ -395,7 +395,7 @@
     <Content Include="Content\DataTables\images\sort_desc.png" />
     <Content Include="Content\DataTables\images\sort_desc_disabled.png" />
     <Content Include="Content\DataTables\swf\flashExport.swf" />
-    <Content Include="Content\images\emptytomb.jpg" />
+    <Content Include="Content\images\four-o-four.jpg" />
     <Content Include="Content\images\Jcrop.gif" />
     <Content Include="Content\images\logo-small.png" />
     <Content Include="Content\jquery.Jcrop.css" />

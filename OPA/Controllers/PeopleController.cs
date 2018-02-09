@@ -1,7 +1,7 @@
-﻿// <copyright file="PeopleController.cs" company="Anargyroi Development">
+﻿// <copyright file="PeopleController.cs" company="The OPA Project">
 //   Copyright 2018 Andrew Franqueira
 //  
-//   This file is part of Online Parish Administration.
+//   This file is part of OPA.
 //   Licensed under GNU General Public License 3.0 or later. 
 //   Some rights reserved. See COPYING.
 //  
@@ -60,6 +60,7 @@ namespace OPA.Controllers
         public ActionResult Create(int? parentId)
         {
             var model = new PersonViewModel { ParentId = parentId, ForCouple = PersonHelper.IsMarried(parentId) };
+            ViewBag.MemberTypeList = PersonHelper.GetMemberTypeList();
             return View(model);
         }
 
@@ -67,7 +68,7 @@ namespace OPA.Controllers
         [HttpPost]
         [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,LastName,FirstName,MiddleName,Sex,DateOfBirth,Orthodox,Active,ParentId,ForCouple")] PersonViewModel model)
+        public ActionResult Create([Bind(Include = "Id,LastName,FirstName,MiddleName,Sex,DateOfBirth,MemberType,Active,ParentId,ForCouple")] PersonViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -99,6 +100,7 @@ namespace OPA.Controllers
                 return RedirectToAction("Edit", new { id = person.Id });
             }
 
+            ViewBag.MemberTypeList = PersonHelper.GetMemberTypeList();
             return View(model);
         }
 
@@ -136,13 +138,14 @@ namespace OPA.Controllers
             model.Pledges = FinancialHelper.GetPledges(person.Id, model.Spouse?.Id).Select(p => new PledgeViewModel(p)).ToList();
             model.Donations = FinancialHelper.GetDonations(person.Id, model.Spouse?.Id).Select(d => new DonationViewModel(d)).ToList();
 
+            ViewBag.MemberTypeList = PersonHelper.GetMemberTypeList();
             return View(model);
         }
 
         // POST: /People/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,LastName,FirstName,MiddleName,Sex,DateOfBirth,Orthodox,Active")] PersonViewModel model)
+        public ActionResult Edit([Bind(Include = "Id,LastName,FirstName,MiddleName,Sex,DateOfBirth,MemberType,Active")] PersonViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -152,6 +155,7 @@ namespace OPA.Controllers
                 return RedirectToAction("Edit", new { id = person.Id, success = true });
             }
 
+            ViewBag.MemberTypeList = PersonHelper.GetMemberTypeList();
             return View(model);
         }
 

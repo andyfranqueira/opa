@@ -1,7 +1,7 @@
-﻿// <copyright file="PersonLogic.cs" company="Anargyroi Development">
+﻿// <copyright file="PersonLogic.cs" company="The OPA Project">
 //   Copyright 2018 Andrew Franqueira
 //  
-//   This file is part of Online Parish Administration.
+//   This file is part of OPA.
 //   Licensed under GNU General Public License 3.0 or later. 
 //   Some rights reserved. See COPYING.
 //  
@@ -27,6 +27,15 @@ namespace OPA.BusinessLogic
         }
 
         protected OpaContext Database { get; set; }
+
+        public List<SelectListItem> GetMemberTypeList()
+        {
+            return Database.ValueSets
+                .Where(v => v.Set == ValueSet.MemberType)
+                .OrderBy(v => v.Order)
+                .Select(v => new SelectListItem { Value = v.Option, Text = v.Option })
+                .ToList();
+        }
 
         public Person GetPersonByUserEmail(string email)
         {

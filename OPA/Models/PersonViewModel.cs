@@ -1,7 +1,7 @@
-﻿// <copyright file="PersonViewModel.cs" company="Anargyroi Development">
+﻿// <copyright file="PersonViewModel.cs" company="The OPA Project">
 //   Copyright 2018 Andrew Franqueira
 //  
-//   This file is part of Online Parish Administration.
+//   This file is part of OPA.
 //   Licensed under GNU General Public License 3.0 or later. 
 //   Some rights reserved. See COPYING.
 //  
@@ -52,7 +52,8 @@ namespace OPA.Models
         [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}")]
         public DateTime? DateOfBirth { get; set; }
 
-        public bool Orthodox { get; set; }
+        [Display(Name = "Member Type")]
+        public string MemberType { get; set; }
         public bool Active { get; set; }
 
         public int? ParentId { get; set; }
@@ -80,7 +81,7 @@ namespace OPA.Models
                 MiddleName = MiddleName,
                 Sex = Sex,
                 DateOfBirth = DateOfBirth,
-                Orthodox = Orthodox,
+                MemberType = MemberType,
                 Active = Active
             };
         }
@@ -94,7 +95,7 @@ namespace OPA.Models
             FullName = Utilities.FormatName(person);
             Sex = person.Sex;
             DateOfBirth = person.DateOfBirth;
-            Orthodox = person.Orthodox;
+            MemberType = person.MemberType;
             Active = person.Active;
         }
     }

@@ -1,7 +1,8 @@
-﻿@**
+﻿@using OPA.BusinessLogic
+@**
     *  Copyright 2018 Andrew Franqueira
     *
-    *  This file is part of Online Parish Administration.
+    *  This file is part of OPA.
     *  Licensed under GNU General Public License 3.0 or later.
     *  Some rights reserved. See COPYING.
     *
@@ -19,12 +20,12 @@
             </button>
             <div id="logo">
                 <a href="">
-                    <img src="~/Content/images/logo-small.png" alt="Church Logo" />
+                    <img src="~/Content/images/logo-small.png" alt="Org Logo" />
                 </a>
             </div>
             <div id="application-title">
-                <p id="organization-name">@Html.ActionLink("Sts. Kosmas & Damianos", "Index", "Home")</p>
-                <p id="application-name">@Html.ActionLink("Online Parish Administration", "Index", "Home")</p>
+                <p id="organization-name">@Html.ActionLink(Utilities.OrgName, "Index", "Home")</p>
+                <p id="application-name">@Html.ActionLink(Utilities.AppName, "Index", "Home")</p>
             </div>
         </div>
         <div id="header-menu" class="navbar-collapse collapse">
@@ -36,7 +37,7 @@
                             @if (User.IsInRole("Admin"))
                             {
                                 <li>@Html.ActionLink("Admin", "Index", "Home")</li>
-                                <li><a href="https://donorbox.org/stewardship?email=@User.Identity.Name" class="custom-dbox-popup">Make a Donation</a></li>
+                                <li><a href="@Utilities.DonorBoxUrl?email=@User.Identity.Name" class="custom-dbox-popup">Make a Donation</a></li>
                             }
                             <li>@Html.ActionLink("My Account", "Index", "Manage", routeValues: null, htmlAttributes: new {title = "Manage"})</li>
                             <li>

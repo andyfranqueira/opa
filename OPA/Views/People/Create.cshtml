@@ -1,7 +1,7 @@
 ﻿@**
     *  Copyright 2018 Andrew Franqueira
     *
-    *  This file is part of Online Parish Administration.
+    *  This file is part of OPA.
     *  Licensed under GNU General Public License 3.0 or later.
     *  Some rights reserved. See COPYING.
     *
@@ -90,11 +90,10 @@
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.Orthodox, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.MemberType, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-4">
-                <div class="checkbox">
-                    @Html.EditorFor(model => model.Orthodox)
-                    @Html.ValidationMessageFor(model => model.Orthodox, "", new { @class = "text-danger" })
+                <div>
+                    @Html.DropDownListFor(model => model.MemberType, (List<SelectListItem>)ViewBag.MemberTypeList, "", new { @class = "form-control" })
                 </div>
             </div>
         </div>

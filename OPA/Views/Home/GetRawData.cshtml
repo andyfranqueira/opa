@@ -1,7 +1,7 @@
 ﻿@**
     *  Copyright 2018 Andrew Franqueira
     *
-    *  This file is part of Online Parish Administration.
+    *  This file is part of OPA.
     *  Licensed under GNU General Public License 3.0 or later.
     *  Some rights reserved. See COPYING.
     *
@@ -29,27 +29,32 @@
     @foreach (KeyValuePair<string, List<List<string>>> table in ViewBag.Tables)
     {
         <div role="tabpanel" id="@table.Key" class="tab-pane">
-            <table id="@table.Key-table" class="table table-hover table-responsive fit-table">
-                <thead>
-                    <tr>
-                        @foreach (var cell in table.Value[0])
-                        {
-                            <th>@cell</th>
-                        }
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var row in table.Value.Skip(1))
-                    {
+            @if (table.Value != null && table.Value.Any())
+            {
+                <table id="@table.Key-table" class="table table-hover table-responsive fit-table">
+                    <thead>
                         <tr>
-                            @foreach (var cell in row)
-                            {
-                                <td><div style="max-width: 180px;">@cell</div></td>
+                            @foreach (var cell in table.Value[0])
+                    {
+                                <th>@cell</th>
                             }
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach (var row in table.Value.Skip(1))
+                        {
+                            <tr>
+                                @foreach (var cell in row)
+                        {
+                                    <td>
+                                        <div style="max-width: 180px;">@cell</div>
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
         </div>
     }
 </div>

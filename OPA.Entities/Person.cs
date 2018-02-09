@@ -1,7 +1,7 @@
-﻿// <copyright file="Person.cs" company="Anargyroi Development">
+﻿// <copyright file="Person.cs" company="The OPA Project">
 //   Copyright 2018 Andrew Franqueira
 //  
-//   This file is part of Online Parish Administration.
+//   This file is part of OPA.
 //   Licensed under GNU General Public License 3.0 or later. 
 //   Some rights reserved. See COPYING.
 //  
@@ -21,9 +21,9 @@ namespace OPA.Entities
         public string MiddleName { get; set; }
         public Sex Sex { get; set; }
         public DateTime? DateOfBirth { get; set; }
-        public bool Orthodox { get; set; }
+        public string MemberType { get; set; }
         public bool Active { get; set; }
-        public int? LegacyMemberId { get; set; }
+        public int? LegacyId { get; set; }
         public int? LegacyFamilyId { get; set; }
         public int? FatherId { get; set; }
         public int? MotherId { get; set; }

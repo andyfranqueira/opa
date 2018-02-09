@@ -1,7 +1,7 @@
-﻿// <copyright file="Address.cs" company="Anargyroi Development">
+﻿// <copyright file="Address.cs" company="The OPA Project">
 //   Copyright 2018 Andrew Franqueira
 //  
-//   This file is part of Online Parish Administration.
+//   This file is part of OPA.
 //   Licensed under GNU General Public License 3.0 or later. 
 //   Some rights reserved. See COPYING.
 //  
@@ -18,6 +18,6 @@ namespace OPA.Entities
         public string State { get; set; }
         public string PostalCode { get; set; }
         public string Country { get; set; }
-        public int? LegacyFamilyId { get; set; }
+        public int? LegacyId { get; set; }
     }
 }

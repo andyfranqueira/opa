@@ -1,7 +1,7 @@
-﻿// <copyright file="Utilities.cs" company="Anargyroi Development">
+﻿// <copyright file="Utilities.cs" company="The OPA Project">
 //   Copyright 2018 Andrew Franqueira
 //  
-//   This file is part of Online Parish Administration.
+//   This file is part of OPA.
 //   Licensed under GNU General Public License 3.0 or later. 
 //   Some rights reserved. See COPYING.
 //  
@@ -34,8 +34,12 @@ namespace OPA.BusinessLogic
 {
     public static class Utilities
     {
+        public static readonly string OrgName = ConfigurationManager.AppSettings["org:Name"];
+        public static readonly string AppName = ConfigurationManager.AppSettings["app:Name"];
         public static readonly string AdminEmail = ConfigurationManager.AppSettings["admin:Email"];
-        private static readonly string AdminName = ConfigurationManager.AppSettings["admin:Name"];
+        public static readonly string AdminName = ConfigurationManager.AppSettings["admin:Name"];
+        public static readonly string DonorBoxUrl = ConfigurationManager.AppSettings["url:DonorBox"];
+
         private static readonly MailAddress MailFrom = new MailAddress(AdminEmail, AdminName);
         private static readonly string SmtpHost = ConfigurationManager.AppSettings["smtp:Host"];
         private static readonly string SmtpPort = ConfigurationManager.AppSettings["smtp:Port"];

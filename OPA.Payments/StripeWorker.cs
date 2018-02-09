@@ -1,7 +1,7 @@
-﻿// <copyright file="StripeWorker.cs" company="Anargyroi Development">
+﻿// <copyright file="StripeWorker.cs" company="The OPA Project">
 //   Copyright 2018 Andrew Franqueira
 //  
-//   This file is part of Online Parish Administration.
+//   This file is part of OPA.
 //   Licensed under GNU General Public License 3.0 or later. 
 //   Some rights reserved. See COPYING.
 //  
@@ -10,6 +10,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Stripe;
 
 namespace OPA.Payments
@@ -33,7 +34,9 @@ namespace OPA.Payments
                 LessThanOrEqual = endDate
             };
 
-            foreach (var balanceTransaction in balanceClient.List(parameters))
+            parameters.Limit = 100;
+
+            foreach (var balanceTransaction in balanceClient.List(parameters).Where(t => t.Type != "payout"))
             {
                 StripeCharge charge = null;
 

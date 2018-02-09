@@ -1,7 +1,7 @@
-﻿// <copyright file="PaymentController.cs" company="Anargyroi Development">
+﻿// <copyright file="PaymentController.cs" company="The OPA Project">
 //   Copyright 2018 Andrew Franqueira
 //  
-//   This file is part of Online Parish Administration.
+//   This file is part of OPA.
 //   Licensed under GNU General Public License 3.0 or later. 
 //   Some rights reserved. See COPYING.
 //  

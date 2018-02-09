@@ -1,7 +1,7 @@
 ﻿@**
     *  Copyright 2018 Andrew Franqueira
     *
-    *  This file is part of Online Parish Administration.
+    *  This file is part of OPA.
     *  Licensed under GNU General Public License 3.0 or later.
     *  Some rights reserved. See COPYING.
     *
@@ -28,7 +28,7 @@
             <th>@Html.DisplayNameFor(model => model.FullName)</th>
             <th>@Html.DisplayNameFor(model => model.Sex)</th>
             <th>@Html.DisplayNameFor(model => model.DateOfBirth)</th>
-            <th class="hidden-xs">@Html.DisplayNameFor(model => model.Orthodox)</th>
+            <th class="hidden-xs">@Html.DisplayNameFor(model => model.MemberType)</th>
             <th class="hidden-xs">@Html.DisplayNameFor(model => model.Active)</th>
             <th>Action</th>
         </tr>
@@ -44,7 +44,7 @@
                 </td>
                 <td>@Html.DisplayFor(modelItem => item.Sex)</td>
                 <td>@Html.DisplayFor(modelItem => item.DateOfBirth)</td>
-                <td class="hidden-xs">@Html.DisplayFor(modelItem => item.Orthodox)</td>
+                <td class="hidden-xs">@Html.DisplayFor(modelItem => item.MemberType)</td>
                 <td class="hidden-xs">@Html.DisplayFor(modelItem => item.Active)</td>
                 <td class="fit">@Html.ActionLink("View/Edit", "Edit", new { id = item.Id }, new { @class = "btn btn-default" })</td>
             </tr>

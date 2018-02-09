@@ -1,7 +1,7 @@
 ﻿@**
     *  Copyright 2018 Andrew Franqueira
     *
-    *  This file is part of Online Parish Administration.
+    *  This file is part of OPA.
     *  Licensed under GNU General Public License 3.0 or later.
     *  Some rights reserved. See COPYING.
     *
@@ -9,7 +9,7 @@
 *@
 
 @{
-    ViewBag.Title = "Sts. Kosmas & Damianos";
+    ViewBag.Title = "System Administration";
 }
 
 <h1>@ViewBag.Title</h1>
@@ -39,10 +39,10 @@
         {
             <br/>
             <h2>Administrator Functions</h2>
-            <p>@Html.ActionLink("View Log", "LogFile", "Home", null, new { @class = "btn btn-default" })</p>
             <p>@Html.ActionLink("Manage Users", "ManageUsers", "Manage", null, new { @class = "btn btn-default" })</p>
             <p>@Html.ActionLink("Manage Value Sets", "ValueSets", "Home", null, new { @class = "btn btn-default" })</p>
             <p>@Html.ActionLink("Don't Panic", "GetRawData", "Home", null, new { @class = "btn btn-default" })</p>
+            <p>@Html.ActionLink("View Log", "LogFile", "Home", null, new { @class = "btn btn-default" })</p>
         }
     </div>
 </div>

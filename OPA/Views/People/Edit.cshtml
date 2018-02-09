@@ -1,13 +1,14 @@
 ﻿@**
     *  Copyright 2018 Andrew Franqueira
     *
-    *  This file is part of Online Parish Administration.
+    *  This file is part of OPA.
     *  Licensed under GNU General Public License 3.0 or later.
     *  Some rights reserved. See COPYING.
     *
     *  @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
 *@
 
+@using OPA.BusinessLogic
 @using OPA.Entities
 @model OPA.Models.PersonViewModel
 
@@ -24,7 +25,7 @@
     }
     else
     {
-        <a href="https://donorbox.org/stewardship?first_name=@Model.FirstName&last_name=@Model.LastName&email=@User.Identity.Name" class="custom-dbox-popup btn btn-default">Make a donation</a>
+        <a href="@Utilities.DonorBoxUrl?first_name=@Model.FirstName&last_name=@Model.LastName&email=@User.Identity.Name" class="custom-dbox-popup btn btn-default">Make a donation</a>
     }
 </p>
 @if (Model.ProfilePhoto != null)
@@ -50,87 +51,88 @@
         <div class="col-md-6">
             <div class="form-horizontal">
 
-                @if (ViewBag.Success != null && ViewBag.Success)
-                {
-                    <div id="success-alert" class="alert alert-success alert-dismissable">
-                        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                        <strong>Success!</strong>
+    @if (ViewBag.Success != null && ViewBag.Success)
+    {
+        <div id="success-alert" class="alert alert-success alert-dismissable">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            <strong>Success!</strong>
+        </div>
+    }
+
+    @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "person-form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.Id)
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.FirstName, htmlAttributes: new { @class = "control-label col-md-4" })
+            <div class="col-md-6">
+                @Html.EditorFor(model => model.FirstName, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.FirstName, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.MiddleName, htmlAttributes: new { @class = "control-label col-md-4" })
+            <div class="col-md-6">
+                @Html.EditorFor(model => model.MiddleName, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.MiddleName, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.LastName, htmlAttributes: new { @class = "control-label col-md-4" })
+            <div class="col-md-6">
+                @Html.EditorFor(model => model.LastName, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.LastName, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Sex, htmlAttributes: new { @class = "control-label col-md-4" })
+            <div class="col-md-6">
+                @Html.EnumDropDownListFor(model => model.Sex, new { @class = "form-control" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.DateOfBirth, htmlAttributes: new {@class = "control-label col-md-4"})
+            <div class="col-md-6">
+                <div class="input-group date">
+                    @Html.TextBoxFor(model => model.DateOfBirth, "{0:MM/dd/yyyy}", new {id = "date-of-birth", @class = "form-control"})
+                    <span id="date-icon" class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                    @Html.ValidationMessageFor(model => model.DateOfBirth, "", new {@class = "text-danger"})
+                </div>
+            </div>
+        </div>
+
+        if (User.IsInRole("Admin"))
+        {
+            <div class="form-group">
+                @Html.LabelFor(model => model.MemberType, htmlAttributes: new { @class = "control-label col-md-4" })
+                <div class="col-md-6">
+                    <div>
+                        @Html.DropDownListFor(model => model.MemberType, (List<SelectListItem>)ViewBag.MemberTypeList, "", new { @class = "form-control" })
                     </div>
-                }
+                </div>
+            </div>
 
-                @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "person-form" }))
-                {
-                    @Html.AntiForgeryToken()
-                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                    @Html.HiddenFor(model => model.Id)
-
-                    <div class="form-group">
-                        @Html.LabelFor(model => model.FirstName, htmlAttributes: new { @class = "control-label col-md-4" })
-                        <div class="col-md-6">
-                            @Html.EditorFor(model => model.FirstName, new { htmlAttributes = new { @class = "form-control" } })
-                            @Html.ValidationMessageFor(model => model.FirstName, "", new { @class = "text-danger" })
-                        </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Active, htmlAttributes: new { @class = "control-label col-md-4" })
+                <div class="col-md-6">
+                    <div class="checkbox">
+                        @Html.EditorFor(model => model.Active)
+                        @Html.ValidationMessageFor(model => model.Active, "", new { @class = "text-danger" })
                     </div>
-
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.MiddleName, htmlAttributes: new { @class = "control-label col-md-4" })
-                            <div class="col-md-6">
-                                @Html.EditorFor(model => model.MiddleName, new { htmlAttributes = new { @class = "form-control" } })
-                                @Html.ValidationMessageFor(model => model.MiddleName, "", new { @class = "text-danger" })
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.LastName, htmlAttributes: new { @class = "control-label col-md-4" })
-                            <div class="col-md-6">
-                                @Html.EditorFor(model => model.LastName, new { htmlAttributes = new { @class = "form-control" } })
-                                @Html.ValidationMessageFor(model => model.LastName, "", new { @class = "text-danger" })
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.Sex, htmlAttributes: new { @class = "control-label col-md-4" })
-                            <div class="col-md-6">
-                                @Html.EnumDropDownListFor(model => model.Sex, new { @class = "form-control" })
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.DateOfBirth, htmlAttributes: new { @class = "control-label col-md-4" })
-                            <div class="col-md-6">
-                                <div class="input-group date">
-                                    @Html.TextBoxFor(model => model.DateOfBirth, "{0:MM/dd/yyyy}", new { id = "date-of-birth", @class = "form-control" })
-                                    <span id="date-icon" class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
-                                    @Html.ValidationMessageFor(model => model.DateOfBirth, "", new { @class = "text-danger" })
-                                </div>
-                            </div>
-                        </div>
-
-                        if (User.IsInRole("Admin"))
-                         {
-                             <div class="form-group">
-                                 @Html.LabelFor(model => model.Orthodox, htmlAttributes: new {@class = "control-label col-md-4 col-xs-4"})
-                                 <div class="col-md-2 col-xs-2">
-                                     <div class="checkbox">
-                                         @Html.EditorFor(model => model.Orthodox)
-                                         @Html.ValidationMessageFor(model => model.Orthodox, "", new {@class = "text-danger"})
-                                     </div>
-                                 </div>
-
-                                 @Html.LabelFor(model => model.Active, htmlAttributes: new {@class = "control-label col-md-2 col-xs-2"})
-                                 <div class="col-md-2 col-xs-2">
-                                     <div class="checkbox">
-                                         @Html.EditorFor(model => model.Active)
-                                         @Html.ValidationMessageFor(model => model.Active, "", new {@class = "text-danger"})
-                                     </div>
-                                 </div>
-                             </div>
-                        }
-                        else
-                        {
-                            @Html.HiddenFor(model => model.Orthodox)
-                            @Html.HiddenFor(model => model.Active)
-                        }
+                </div>
+            </div>
+        }
+        else
+        {
+            @Html.HiddenFor(model => model.MemberType)
+            @Html.HiddenFor(model => model.Active)
+        }
 
                     <div class="form-group">
                             <input type="submit" value="Save changes" class="btn btn-default">
@@ -341,7 +343,7 @@
                 {
                     <a href="https://donorbox.org/user_session/new" class="btn btn-default" target="_blank">Manage recurring payments</a>
                 }
-                <a href="https://donorbox.org/stewardship?first_name=@Model.FirstName&last_name=@Model.LastName&email=@User.Identity.Name" class="custom-dbox-popup btn btn-default">Make a donation</a>
+                <a href="@Utilities.DonorBoxUrl?first_name=@Model.FirstName&last_name=@Model.LastName&email=@User.Identity.Name" class="custom-dbox-popup btn btn-default">Make a donation</a>
             }
         </p>
 
