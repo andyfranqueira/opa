@@ -43,28 +43,28 @@
             </div>
 
             <div class="form-group">
+                <div class="col-xs-3">
+                    @Html.LabelFor(model => model.Designations[0].Amount, htmlAttributes: new { @class = "control-label" })
+                </div>
                 <div class="col-xs-4">
                     @Html.LabelFor(model => model.Designations[0].Fund, htmlAttributes: new { @class = "control-label" })
                 </div>
                 <div class="col-xs-5">
                     @Html.LabelFor(model => model.Designations[0].Designation, htmlAttributes: new { @class = "control-label" })
                 </div>
-                <div class="col-xs-3">
-                    @Html.LabelFor(model => model.Designations[0].Amount, htmlAttributes: new { @class = "control-label" })
-                </div>
             </div>
 
             @for (var i = 0; i < Model.Designations.Count; i++)
             {
                 <div class="form-group designation">
+                    <div class="col-xs-3">
+                        @Html.EditorFor(model => model.Designations[i].Amount, new { htmlAttributes = new { @class = "form-control number" } })
+                    </div>
                     <div class="col-xs-4">
                         @Html.DropDownListFor(model => model.Designations[i].Fund, Model.FundList, "Select Fund...", new { @class = "form-control fund" })
                     </div>
                     <div class="col-xs-5">
                         @Html.EditorFor(model => model.Designations[i].Designation, new { htmlAttributes = new { @class = "form-control" } })
-                    </div>
-                    <div class="col-xs-3">
-                        @Html.EditorFor(model => model.Designations[i].Amount, new { htmlAttributes = new { @class = "form-control number" } })
                     </div>
                 </div>
             }
