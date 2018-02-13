@@ -56,9 +56,11 @@ namespace OPA.Controllers
                 return HttpNotFound();
             }
 
-            var model = new PaymentDonationViewModel(payment);
-            ViewBag.Donors = FinancialHelper.GetDonorList();
-            ViewBag.FundList = FinancialHelper.GetFundList();
+            var model = new PaymentDonationViewModel(payment, 5)
+            {
+                DonorList = FinancialHelper.GetDonorList(),
+                FundList = FinancialHelper.GetFundList()
+            };
 
             return PartialView(model);
         }
@@ -66,7 +68,7 @@ namespace OPA.Controllers
         // POST: /Payment/CreateDonation
         [HttpPost, ActionName("CreateDonation")]
         [ValidateAntiForgeryToken]
-        public ActionResult CreateDonation([Bind(Include = "PaymentId,PaymentInfo,PersonId,Fund")] PaymentDonationViewModel model)
+        public ActionResult CreateDonation(PaymentDonationViewModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -76,7 +78,15 @@ namespace OPA.Controllers
             var payment = Database.Payments.Find(model.PaymentId);
             var personId = Database.People.Find(model.PersonId).Id;
 
-            PaymentHelper.RecordPaymentAsDonation(payment, personId, model.Fund);
+            if (model.Designations.Sum(d => d.Amount) != payment.Amount)
+            {
+                return View(model);
+            }
+
+            foreach (var designation in model.Designations.Where(d => d.Amount > 0))
+            {
+                PaymentHelper.RecordPaymentAsDonation(payment, personId, designation.Fund, designation.Designation, designation.Amount);
+            }
 
             return RedirectToAction("Index");
         }

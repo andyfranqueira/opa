@@ -12,7 +12,6 @@
 
 @{
     ViewBag.Title = "Record Donations";
-    ViewData["DonorList"] = Model.Donors;
 }
 
 <h1>@ViewBag.Title</h1>
@@ -49,7 +48,7 @@
         {
             <div class="form-group clearfix donations">
                 <div class="col-xs-3">
-                    @Html.DropDownListFor(model => model.Donations[i].PersonId, Model.Donors, "", new { @class = "form-control person-id" })
+                    @Html.DropDownListFor(model => model.Donations[i].PersonId, Model.DonorList, "", new { @class = "form-control person-id" })
                 </div>
 
                 <div class="col-xs-2 date donate-date">
@@ -61,7 +60,7 @@
                 </div>
 
                 <div class="col-xs-3">
-                    @Html.DropDownListFor(model => model.Donations[i].Fund, (List<SelectListItem>)ViewBag.FundList, "", new { @class = "form-control fund" })
+                    @Html.DropDownListFor(model => model.Donations[i].Fund, Model.FundList, "", new { @class = "form-control fund" })
                 </div>
 
                 <div class="col-xs-2">

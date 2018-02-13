@@ -8,6 +8,7 @@
 //   @license GPL-3.0+ http://spdx.org/licenses/GPL-3.0+
 // </copyright>
 
+using System;
 using System.Data.Entity;
 using System.Linq;
 using System.Net.Mime;
@@ -44,9 +45,11 @@ namespace OPA.Controllers
 
             var model = new PledgeViewModel
             {
-                PersonId = (int)personId
+                PersonId = (int)personId,
+                Year = DateTime.Now.Year
             };
 
+            ViewBag.YearList = FinancialHelper.GetPledgeYearList();
             ViewBag.FrequencyList = FinancialHelper.GetFrequencyList();
             ViewBag.FundList = FinancialHelper.GetFundList();
             return PartialView(model);
@@ -65,6 +68,7 @@ namespace OPA.Controllers
                 return ReturnToSender(model.PersonId);
             }
 
+            ViewBag.YearList = FinancialHelper.GetPledgeYearList();
             ViewBag.FrequencyList = FinancialHelper.GetFrequencyList();
             ViewBag.FundList = FinancialHelper.GetFundList();
             return View(model);
@@ -85,6 +89,7 @@ namespace OPA.Controllers
             }
 
             var model = new PledgeViewModel(pledge);
+            ViewBag.YearList = FinancialHelper.GetPledgeYearList();
             ViewBag.FrequencyList = FinancialHelper.GetFrequencyList();
             ViewBag.FundList = FinancialHelper.GetFundList();
             return PartialView(model);
@@ -165,8 +170,12 @@ namespace OPA.Controllers
         [Authorize(Roles = "Admin")]
         public ActionResult BatchDonations(int? count)
         {
-            var model = new BatchDonationsViewModel(count ?? 5) { Donors = FinancialHelper.GetDonorList() };
-            ViewBag.FundList = FinancialHelper.GetFundList();
+            var model = new BatchDonationsViewModel(count ?? 5)
+            {
+                DonorList = FinancialHelper.GetDonorList(),
+                FundList = FinancialHelper.GetFundList()
+            };
+
             return View(model);
         }
 
@@ -176,9 +185,9 @@ namespace OPA.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult BatchDonations(BatchDonationsViewModel model)
         {
-            model.Donors = FinancialHelper.GetDonorList();
             model.Donations.Add(new DonationViewModel());
-            ViewBag.FundList = FinancialHelper.GetFundList();
+            model.DonorList = FinancialHelper.GetDonorList();
+            model.FundList = FinancialHelper.GetFundList();
             return View(model);
         }
 

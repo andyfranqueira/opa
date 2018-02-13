@@ -9,6 +9,7 @@
 // </copyright>
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using OPA.BusinessLogic;
 using OPA.Entities;
@@ -112,37 +113,38 @@ namespace OPA.Models
 
     public class ValueSetViewModel
     {
-        public ValueSetViewModel()
+        public ValueSet Set { get; set; }
+        public List<ValueViewModel> Values { get; set; }
+    }
+
+    public class ValueViewModel
+    {
+        public ValueViewModel()
         {
         }
 
-        public ValueSetViewModel(Value value)
+        public ValueViewModel(Value value)
         {
-            MapToValueSetViewModel(value);
+            MapToValueViewModel(value);
         }
 
         public int Id { get; set; }
-        public ValueSet? Set { get; set; }
+        public ValueSet Set { get; set; }
         public string Option { get; set; }
         public int Order { get; set; }
 
-        public Value MapToValueSet()
+        public Value MapToValue()
         {
-            if (Set == null)
-            {
-                return null;
-            }
-
             return new Value
             {
                 Id = Id,
-                Set = (ValueSet)Set,
+                Set = Set,
                 Option = Option,
                 Order = Order
             };
         }
 
-        private void MapToValueSetViewModel(Value value)
+        private void MapToValueViewModel(Value value)
         {
             Id = value.Id;
             Set = value.Set;

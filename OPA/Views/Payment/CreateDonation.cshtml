@@ -25,30 +25,55 @@
             @Html.HiddenFor(model => model.PaymentId)
 
             <div class="alert alert-info">
-                <h1>@Model.DonorName</h1>
-                <p>@Model.PaymentMethod</p>
-                <p>@Model.TransactionDate</p>
-                <p>$@Model.Amount</p>
-                <p>@Model.PaymentDetails</p>
+                <h4>@Model.DonorName</h4>
+                <div class="col-md-6">
+                    <p class="break-line">@Model.PaymentMethod</p>
+                </div>
+                <div class="col-md-6">
+                    <p class="break-line">@Model.PaymentDetails</p>
+                </div>
+                <div class="clearfix"></div>
             </div>
 
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
             <div class="form-group">
-                @Html.LabelFor(model => model.PersonId, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-8">                  
-                    @Html.DropDownListFor(model => model.PersonId, (List<SelectListItem>)ViewBag.Donors, "", new { @class = "form-control" })
+                <div class="col-xs-9">
+                    @Html.DropDownListFor(model => model.PersonId, Model.DonorList, "Select Donor...", new { @class = "form-control required" })
                 </div>
             </div>
 
             <div class="form-group">
-                @Html.LabelFor(model => model.Fund, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-8">
-                    @Html.DropDownListFor(model => model.Fund, (List<SelectListItem>)ViewBag.FundList, "", new { @class = "form-control" })
+                <div class="col-xs-4">
+                    @Html.LabelFor(model => model.Designations[0].Fund, htmlAttributes: new { @class = "control-label" })
+                </div>
+                <div class="col-xs-5">
+                    @Html.LabelFor(model => model.Designations[0].Designation, htmlAttributes: new { @class = "control-label" })
+                </div>
+                <div class="col-xs-3">
+                    @Html.LabelFor(model => model.Designations[0].Amount, htmlAttributes: new { @class = "control-label" })
                 </div>
             </div>
 
+            @for (var i = 0; i < Model.Designations.Count; i++)
+            {
+                <div class="form-group designation">
+                    <div class="col-xs-4">
+                        @Html.DropDownListFor(model => model.Designations[i].Fund, Model.FundList, "Select Fund...", new { @class = "form-control fund" })
+                    </div>
+                    <div class="col-xs-5">
+                        @Html.EditorFor(model => model.Designations[i].Designation, new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
+                    <div class="col-xs-3">
+                        @Html.EditorFor(model => model.Designations[i].Amount, new { htmlAttributes = new { @class = "form-control number" } })
+                    </div>
+                </div>
+            }
+
             <div class="form-group">
-                <div class="col-md-offset-2 col-md-8">
+                <div class="col-md-12">
+                    <span id="add-designation" class="btn btn-default pull-right">Add another fund/designation</span>
+                </div>
+                <div class="col-md-9">
                     <input type="submit" value="Save" class="btn btn-default" />
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 </div>
@@ -62,9 +87,39 @@
     $(document).ready(function () {
 
         $("#donation-form").validate({
-            rules: {
-                PersonId: { required: true },
-                Fund: { required: true }
+            submitHandler: function (form) {
+                var total = 0;
+                $("[id$=Amount]").each(function () {
+                    total += parseFloat($(this).val());
+                });
+
+                if (total !== parseFloat(@Model.PaymentAmount)) {
+                    alert("Total designations must equal $@Model.PaymentAmount");
+                    return false;
+                }
+                form.submit();
+                return true;
+            }
+        });
+
+        $("[id$=Fund]").each(function () {
+            $(this).rules('add', {
+                required: {
+                    depends: function () {
+                        var amount = $("#" + $(this).attr("id").replace("Fund", "Amount")).val();
+                        return amount !== "" && amount > 0;
+                    }
+                }
+            });
+        });
+
+        $(".designation").hide();
+        $(".designation:hidden").first().show();
+
+        $("#add-designation").click(function () {
+            $(".designation:hidden").first().show();
+            if (!$(".designation:hidden").length) {
+                $("#add-designation").hide();
             }
         });
     });

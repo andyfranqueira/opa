@@ -206,7 +206,7 @@ namespace OPA.BusinessLogic
         {
             using (var stream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Delete | FileShare.ReadWrite))
             {
-                var length = System.Convert.ToInt32(stream.Length);
+                var length = Convert.ToInt32(stream.Length);
                 var data = new byte[length];
                 stream.Read(data, 0, length);
                 return data;

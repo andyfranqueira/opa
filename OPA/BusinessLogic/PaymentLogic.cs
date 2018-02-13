@@ -74,7 +74,7 @@ namespace OPA.BusinessLogic
                 var person = GetDonor(payment);
                 if (person != null)
                 {
-                    RecordPaymentAsDonation(payment, person.Id, payment.PaymentDetails);
+                    RecordPaymentAsDonation(payment, person.Id, payment.PaymentDetails, payment.PaymentDetails, payment.Amount);
                 }
             }
         }
@@ -123,14 +123,14 @@ namespace OPA.BusinessLogic
             return person;
         }
 
-        public void RecordPaymentAsDonation(Payment payment, int personId, string fund)
+        public void RecordPaymentAsDonation(Payment payment, int personId, string fund, string designation, decimal amount)
         {
             Database.Donations.Add(new Donation
             {
                 DonationDate = payment.TransactionDate,
-                Amount = payment.Amount,
                 Fund = fund,
-                Designation = payment.PaymentDetails,
+                Amount = amount,
+                Designation = designation,
                 PersonId = personId,
                 PaymentId = payment.Id
             });

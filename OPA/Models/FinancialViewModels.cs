@@ -162,7 +162,7 @@ namespace OPA.Models
             {
                 PaymentInfo = donation.Payment.PaymentMethod + "<br/>" 
                     + donation.Payment.TransactionDate + "<br/>" 
-                    + donation.Payment.PaymentDetails + "<br/>" 
+                    + "$" + donation.Payment.Amount + "<br/>" 
                     + "Recurring: " + (donation.Payment.RecurringDonation ? "Yes" : "No");
 
                 RecurringPayment = donation.Payment.RecurringDonation;
@@ -192,7 +192,8 @@ namespace OPA.Models
             }
         }
 
-        public List<SelectListItem> Donors { get; set; }
+        public List<SelectListItem> DonorList { get; set; }
+        public List<SelectListItem> FundList { get; set; }
         public List<DonationViewModel> Donations { get; set; }
     }
 }

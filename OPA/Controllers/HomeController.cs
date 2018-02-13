@@ -8,12 +8,13 @@
 //   @license GPL-3.0+ http://spdx.org/licenses/GPL-3.0+
 // </copyright>
 
+using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using log4net.Appender;
 using OPA.BusinessLogic;
+using OPA.Entities;
 using OPA.Models;
 
 namespace OPA.Controllers
@@ -35,51 +36,69 @@ namespace OPA.Controllers
             return View();
         }
 
-        // GET: /Home/LogFile
-        [Authorize(Roles = "Admin")]
-        public FileResult LogFile()
-        {
-            var logfile = Logger.Logger.Repository.GetAppenders().OfType<RollingFileAppender>().FirstOrDefault()?.File;
-            return logfile == null ? null : File(Utilities.GetFile(logfile), "text/plain", "Opa.log");
-        }
-
         // GET: /Home/ValueSets
         [Authorize(Roles = "Admin")]
         public ActionResult ValueSets()
         {
-            var values = Database.ValueSets.OrderBy(v => v.Set).ThenBy(v => v.Order).ToList();
-            var model = values.Select(v => new ValueSetViewModel(v)).ToList();
-            model.Add(new ValueSetViewModel());
+            var model = new List<ValueSetViewModel>();
+
+            foreach (ValueSet valueSet in Enum.GetValues(typeof(ValueSet)))
+            {
+                var values = Database.ValueSets
+                    .Where(v => v.Set == valueSet)
+                    .OrderBy(v => v.Order)
+                    .ToList();
+
+                model.Add(new ValueSetViewModel
+                {
+                    Set = valueSet,
+                    Values = values.Select(v => new ValueViewModel(v)).ToList()
+                });
+            }
 
             return View(model);
         }
 
-        // POST: /Home/ValueSets
+        public void UpdateRow(int id, int newPos)
+        {
+            Database.ValueSets.Find(id).Order = newPos;
+            Database.SaveChanges();
+        }
+
+        // GET: /Home/CreateValue
+        [Authorize(Roles = "Admin")]
+        public ActionResult CreateValue(ValueSet set)
+        {
+            var model = new ValueViewModel { Set = set };
+            return PartialView(model);
+        }
+
+        // POST: /Home/CreateValue
         [HttpPost]
         [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
-        public ActionResult ValueSets(List<ValueSetViewModel> model)
+        public ActionResult CreateValue([Bind(Include = "Id,Set,Option,Order")] ValueViewModel model)
         {
-            foreach (var entry in model)
+            if (ModelState.IsValid)
             {
-                if (!string.IsNullOrWhiteSpace(entry.Option))
-                {
-                    var value = entry.MapToValueSet();
-
-                    if (entry.Id == 0)
-                    {
-                        Database.ValueSets.Add(value);
-                        Database.SaveChanges();
-                        entry.Id = value.Id;
-                    }
-                    else
-                    {
-                        Database.Entry(value).State = EntityState.Modified;
-                        Database.SaveChanges();
-                    }
-                }
+                var values = Database.ValueSets.Where(v => v.Set == model.Set);
+                model.Order = values.Any() ? values.Max(v => v.Order) + 1 : 1;
+                Database.ValueSets.Add(model.MapToValue());
+                Database.SaveChanges();
             }
 
+            return RedirectToAction("ValueSets", "Home");
+        }
+
+        // POST: /Home/DeleteValue/5
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteValue(int id)
+        {
+            var value = Database.ValueSets.Find(id);
+            Database.ValueSets.Remove(value);
+            Database.SaveChanges();
             return RedirectToAction("ValueSets", "Home");
         }
 
@@ -107,6 +126,14 @@ namespace OPA.Controllers
 
             ViewBag.Tables = tables;
             return View();
+        }
+
+        // GET: /Home/LogFile
+        [Authorize(Roles = "Admin")]
+        public FileResult LogFile()
+        {
+            var logfile = Logger.Logger.Repository.GetAppenders().OfType<RollingFileAppender>().FirstOrDefault()?.File;
+            return logfile == null ? null : File(Utilities.GetFile(logfile), "text/plain", "Opa.log");
         }
 
         private static List<List<string>> MapObjectList<T>(IEnumerable<T> objectList)

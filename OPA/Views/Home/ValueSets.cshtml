@@ -16,85 +16,90 @@
 }
 
 <h1>@ViewBag.Title</h1>
-<hr />
+<hr/>
 
 <div id="main-content">
-    @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "values-form" }))
+    
+    @foreach (var set in Model)
     {
-        @Html.AntiForgeryToken()
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="col-md-4">
+            <h3>@set.Set.GetDisplay()</h3>
 
-        <div class="col-md-12">
-            <div class="col-md-6">
-                @{
-                    var currentSet = string.Empty;
-                }
-
-                @for (var i = 0; i < Model.Count; i++)
+            <table id="@set.Set-values" class="table table-responsive valuesets">
+                <thead>
+                <tr>
+                    <th class="hidden">Order</th>
+                    <th class="hidden">Id</th>
+                    <th>Value</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var value in set.Values)
                 {
-                    var set = Model[i].Set;
-                    if (set != null)
-                    {
-                        if (currentSet != set.GetDisplay())
-                        {
-                            currentSet = set.GetDisplay();
-                            <h3>@currentSet</h3>
-                        }
-
-                        @Html.HiddenFor(model => model[i].Id)
-
-                        <div class="clearfix">
-                            @Html.HiddenFor(model => model[i].Set)
-
-                            <div class="col-xs-6">
-                                @Html.EditorFor(model => model[i].Option, new { htmlAttributes = new { @class = "form-control" } })
-                            </div>
-
-                            <div class="col-xs-3">
-                                @Html.EditorFor(model => model[i].Order, new { htmlAttributes = new { @class = "form-control" } })
-                            </div>
-                        </div>
-                    }
+                    <tr>
+                        <td class="hidden">@value.Order</td>
+                        <td class="hidden">@value.Id</td>
+                        <td class="reorder option">@value.Option</td>
+                        <td class="fit">
+                            @using (Html.BeginForm("DeleteValue", "Home", null, FormMethod.Post, new { style = "display: inline-block" }))
+                            {
+                                @Html.AntiForgeryToken()
+                                @Html.Hidden("id", value.Id)
+                                <button type="submit" class="btn btn-danger">
+                                    <span class="glyphicon glyphicon-minus half-font" aria-hidden="true"></span>
+                                </button>
+                            }
+                        </td>
+                    </tr>
                 }
-            </div>
-
-            <div class="col-md-6">
-                @for (var i = 0; i < Model.Count; i++)
-                {
-                    if (Model[i].Set == null)
-                    {
-                        <h3>Add a New Value</h3>
-                        @Html.HiddenFor(model => model[i].Id)
-
-                        <div class="form-group clearfix">
-                            <div class="col-xs-9">
-                                @Html.EnumDropDownListFor(model => model[i].Set, "Select Value Set...", new { @class = "form-control" })
-                            </div>
-
-                            <div class="col-xs-6">
-                                @Html.EditorFor(model => model[i].Option, new { htmlAttributes = new { @class = "form-control", placeholder = "Option" } })
-                            </div>
-
-                            <div class="col-xs-3">
-                                @Html.EditorFor(model => model[i].Order, new { htmlAttributes = new { @class = "form-control", placeholder = "Order" } })
-                            </div>
-                        </div>
-                    }
-                }
-            </div>
-        </div>
-
-        <div class="form-group clearfix">
-            <div class="pull-right">
-                <input id="complete" type="submit" value="Save" class="btn btn-default"/>
-            </div>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td class="hidden"></td>
+                        <td class="hidden"></td>
+                        <td colspan="2" class="fit">
+                            <a href="@Url.Action("CreateValue", "Home", new { set = set.Set } )" class="btn btn-success pull-right modal-link">
+                                <span class="glyphicon glyphicon-plus half-font" aria-hidden="true"></span>
+                            </a>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
         </div>
     }
 </div>
 
 
 @section Scripts {
+    @Scripts.Render("~/bundles/datatables")
+
     <script type="text/javascript">
-        $(document).ready(function () {});
+        $(document).ready(function () {
+
+            $(".valuesets").DataTable({
+                searching: false,
+                paging: false,
+                info: false,
+                rowReorder: { selector: "td.option" },
+                columnDefs: [{ "orderable": false, "targets": [2, 3] }]
+            });
+
+            var url = '@Url.Action("UpdateRow", "Home")';
+
+            $(".valuesets").on("row-reorder.dt", function (event, data) {
+                for (var i = 0, ien = data.length ; i < ien ; i++) {
+                    var rowData = $(this).DataTable().row(data[i].node).data();
+                    $.ajax({
+                        type: "GET",
+                        cache: false,
+                        contentType: "application/json; charset=utf-8",
+                        url: url,
+                        data: { id: rowData[1], newPos: data[i].newData },
+                        dataType: "json"
+                    });
+                }
+            });
+        });
     </script>
 }

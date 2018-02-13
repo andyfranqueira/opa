@@ -9,8 +9,10 @@
 // </copyright>
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Web.Mvc;
 using OPA.Entities;
 
 namespace OPA.Models
@@ -83,42 +85,45 @@ namespace OPA.Models
         public bool DonationRecorded { get; set; }
     }
 
+    public class DesignationViewModel
+    {
+        public string Fund { get; set; }
+        public string Designation { get; set; }
+        public decimal Amount { get; set; }
+    }
+
     public class PaymentDonationViewModel
     {
         public PaymentDonationViewModel()
         {
         }
 
-        public PaymentDonationViewModel(Payment payment)
+        public PaymentDonationViewModel(Payment payment, int initialize)
         {
             PaymentId = payment.Id;
             DonorName = payment.DonorName;
-            PaymentMethod = payment.PaymentMethod;
-            Amount = payment.Amount;
+            PaymentMethod = payment.PaymentMethod + "\n" + payment.TransactionDate + "\n$" + payment.Amount;
+            PaymentAmount = payment.Amount;
             PaymentDetails = payment.PaymentDetails;
-            TransactionDate = payment.TransactionDate;
+            Designations = new List<DesignationViewModel> { new DesignationViewModel { Amount = payment.Amount } };
+
+            for (var i = 1; i < initialize; i++)
+            {
+                Designations.Add(new DesignationViewModel());
+            }
         }
 
         public int PaymentId { get; set; }
-
-        [Display(Name = "Donor Name")]
         public string DonorName { get; set; }
-
-        [Display(Name = "Payment Method")]
         public string PaymentMethod { get; set; }
-
-        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}")]
-        public DateTime TransactionDate { get; set; }
-
-        [DisplayFormat(DataFormatString = "{0:C2}")]
-        public decimal Amount { get; set; }
-
-        [Display(Name = "Payment Details")]
+        public decimal PaymentAmount { get; set; }
         public string PaymentDetails { get; set; }
+
+        public List<SelectListItem> DonorList { get; set; }
+        public List<SelectListItem> FundList { get; set; }
 
         [Display(Name = "Donor")]
         public int PersonId { get; set; }
-
-        public string Fund { get; set; }
+        public List<DesignationViewModel> Designations { get; set; }
     }
 }

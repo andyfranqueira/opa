@@ -26,8 +26,9 @@ namespace OPA
                       "~/Scripts/respond.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/datatables").Include(
-                        "~/Scripts/DataTables/jquery.dataTables.min.js",
-                        "~/Scripts/DataTables/dataTables.bootstrap4.min.js"));
+                        "~/Scripts/DataTables/jquery.dataTables.js",
+                        "~/Scripts/DataTables/dataTables.rowReorder.js",
+                        "~/Scripts/DataTables/dataTables.bootstrap4.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/datatables-buttons").Include(
                         "~/Scripts/DataTables/dataTables.buttons.min.js",
@@ -42,6 +43,7 @@ namespace OPA
                       "~/Content/bootstrap.css",
                       "~/Content/bootstrap-datepicker.css",
                       "~/Content/DataTables/css/dataTables.bootstrap4.min.css",
+                      "~/Content/DataTables/css/rowReorder.bootstrap.min.css",
                       "~/Content/opa-theme.css"));
 
             bundles.Add(new StyleBundle("~/Content/jcrop").Include(

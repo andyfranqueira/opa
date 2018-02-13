@@ -151,6 +151,10 @@ table {
     color: #660000;
 }
 
+.half-font {
+    font-size: 0.5em;
+}
+
 .mask-data {
     display: none;
 }
@@ -222,6 +226,10 @@ table {
     padding: 0 2px;
 }
 
+.reorder {
+    text-align: left !important;
+}
+
 /***************************************
 * Bootstrap classes
 ***************************************/
@@ -257,7 +265,9 @@ table {
 }
 
 .alert-btn {
+    display: inline-block;
     text-align: center;
+    margin: 0; 
     padding: 4px 8px;
     font-size: 11px;
     background-color: #444444;

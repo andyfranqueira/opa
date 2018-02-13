@@ -378,13 +378,13 @@
                                 }
                             </td>
                             <td>@donation.Fund</td>
-                            <td>@Html.DisplayFor(modelItem => donation.Designation)</td>
+                            <td class="break-line">@Html.DisplayFor(modelItem => donation.Designation)</td>
                             @if (User.IsInRole("Admin") && Model.Donations.Any())
                             {
                                 <td>
                                     @if (donation.PaymentInfo != null)
                                     {
-                                        <span class="alert alert-btn">ePayment</span>
+                                        <p class="alert alert-btn">ePayment</p>
                                     }
                                     else
                                     {

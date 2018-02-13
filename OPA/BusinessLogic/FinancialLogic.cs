@@ -8,6 +8,7 @@
 //   @license GPL-3.0+ http://spdx.org/licenses/GPL-3.0+
 // </copyright>
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
@@ -26,6 +27,23 @@ namespace OPA.BusinessLogic
         }
 
         protected OpaContext Database { get; set; }
+
+        public List<SelectListItem> GetPledgeYearList()
+        {
+            var years = Database.Pledges.Select(p => p.Year).Distinct().ToList();
+
+            if (!years.Any())
+            {
+                years.Add(DateTime.Now.Year);
+            }
+
+            years.Add(years.Max() + 1);
+
+            return years
+                .OrderByDescending(y => y)
+                .Select(y => new SelectListItem { Value = y.ToString(), Text = y.ToString() })
+                .ToList();
+        }
 
         public List<SelectListItem> GetFrequencyList()
         {

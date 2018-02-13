@@ -24,7 +24,7 @@
             <th>@Html.DisplayNameFor(model => model.DonationDate)</th>
             <th>@Html.DisplayNameFor(model => model.Amount)</th>
             <th>@Html.DisplayNameFor(model => model.Fund)</th>
-            <th class="fit">@Html.DisplayNameFor(model => model.Designation)</th>
+            <th>@Html.DisplayNameFor(model => model.Designation)</th>
             <th>@Html.DisplayNameFor(model => model.RecurringPayment)</th>
             <th>Action</th>
         </tr>
@@ -38,7 +38,7 @@
                 <td>@Html.DisplayFor(modelItem => item.DonationDate)</td>
                 <td>@Html.DisplayFor(modelItem => item.Amount)</td>
                 <td>@Html.DisplayFor(modelItem => item.Fund)</td>
-                <td>@Html.DisplayFor(modelItem => item.Designation)</td>
+                <td class="break-line">@Html.DisplayFor(modelItem => item.Designation)</td>
                 <td>@Html.DisplayFor(modelItem => item.RecurringPayment)</td>
                 <td>@Html.ActionLink("Receipt", "DonationReceipt", new { id = item.Id }, new { @class = "btn btn-default" })</td>
             </tr>
