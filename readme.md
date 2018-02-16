@@ -9,10 +9,10 @@ The Web.config file contains a few setting that should be populated before first
 
     <add key="org:Name" value="" />
     <add key="app:Name" value="" />
+    <add key="app:Owner" value="" />
 
-    <add key="admin:Name" value="" />
-    <add key="admin:Email" value="" />
-
+    <add key="smtp:Name" value="OPA Support" />
+    <add key="smtp:Email" value="" />
     <add key="smtp:Host" value="" />
     <add key="smtp:Port" value="" />
     <add key="smtp:Account" value="" />
@@ -22,6 +22,7 @@ As is, the application will compile and run with a local database under App_Data
 
 As is, the application is designed to work with DonorBox/Stripe & Square.  This will require updating the DonorBox links and setting the appropriate API keys:
     
+    <add key="url:DonorBox" value="" />
     <add key="key:Square" value="" />
     <add key="key:Stripe" value="" />
 
