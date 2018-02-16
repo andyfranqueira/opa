@@ -36,11 +36,13 @@ namespace OPA.BusinessLogic
     {
         public static readonly string OrgName = ConfigurationManager.AppSettings["org:Name"];
         public static readonly string AppName = ConfigurationManager.AppSettings["app:Name"];
-        public static readonly string AdminEmail = ConfigurationManager.AppSettings["admin:Email"];
-        public static readonly string AdminName = ConfigurationManager.AppSettings["admin:Name"];
-        public static readonly string DonorBoxUrl = ConfigurationManager.AppSettings["url:DonorBox"];
+        public static readonly string OwnerEmail = ConfigurationManager.AppSettings["app:Owner"];
 
-        private static readonly MailAddress MailFrom = new MailAddress(AdminEmail, AdminName);
+        public static readonly string DonorBoxUrl = ConfigurationManager.AppSettings["url:DonorBox"];
+        public static readonly string SmtpEmail = ConfigurationManager.AppSettings["smtp:Email"];
+        public static readonly string SmtpName = ConfigurationManager.AppSettings["smtp:Name"];
+
+        private static readonly MailAddress MailFrom = new MailAddress(SmtpEmail, SmtpName);
         private static readonly string SmtpHost = ConfigurationManager.AppSettings["smtp:Host"];
         private static readonly string SmtpPort = ConfigurationManager.AppSettings["smtp:Port"];
         private static readonly string SmtpAccount = ConfigurationManager.AppSettings["smtp:Account"];
@@ -51,14 +53,14 @@ namespace OPA.BusinessLogic
         {
             var database = new OpaContext();
             var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(database));
-            var adminUser = userManager.FindByName(AdminEmail);
+            var ownerUser = userManager.FindByName(OwnerEmail);
 
-            if (adminUser == null)
+            if (ownerUser == null)
             {
                 var user = new ApplicationUser
                 {
-                    UserName = AdminEmail,
-                    Email = AdminEmail,
+                    UserName = OwnerEmail,
+                    Email = OwnerEmail,
                     EmailConfirmed = true
                 };
 

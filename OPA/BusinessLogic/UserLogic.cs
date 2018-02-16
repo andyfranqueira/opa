@@ -43,7 +43,7 @@ namespace OPA.BusinessLogic
 
         public bool IsOwnerAdmin()
         {
-            return GetCurrentUser().Email == Utilities.AdminEmail;
+            return GetCurrentUser().Email == Utilities.OwnerEmail;
         }
 
         public string[] GetAdminEmails()
