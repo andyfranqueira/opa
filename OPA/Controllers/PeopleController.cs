@@ -177,8 +177,7 @@ namespace OPA.Controllers
             var model = new CoupleViewModel
             {
                 HusbandId = person.Sex == Sex.Male ? person.Id : 0,
-                WifeId = person.Sex == Sex.Female ? person.Id : 0,
-                Active = true
+                WifeId = person.Sex == Sex.Female ? person.Id : 0
             };
 
             ViewBag.PersonId = person.Id;
@@ -190,19 +189,14 @@ namespace OPA.Controllers
         [HttpPost]
         [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
-        public ActionResult AddSpouse([Bind(Include = "Id,HusbandId,WifeId,Active")] CoupleViewModel model, int personId)
+        public ActionResult AddSpouse([Bind(Include = "Id,HusbandId,WifeId")] CoupleViewModel model, int personId)
         {
             if (ModelState.IsValid)
             {
                 var couple = model.MapToCouple();
 
-                var existingCouple = Database.Couples.SingleOrDefault(c => c.HusbandId == couple.HusbandId && c.WifeId == couple.WifeId && !c.Active);
-                if (existingCouple != null)
-                {
-                    existingCouple.Active = couple.Active;
-                    Database.Entry(existingCouple).State = EntityState.Modified;
-                }
-                else
+                var existingCouple = Database.Couples.SingleOrDefault(c => c.HusbandId == couple.HusbandId && c.WifeId == couple.WifeId);
+                if (existingCouple == null)
                 {
                     Database.Couples.Add(couple);
                 }
@@ -212,6 +206,18 @@ namespace OPA.Controllers
             }
 
             return RedirectToAction("AddSpouse", new { personId = personId, success = true });
+        }
+
+        // POST: /People/RemoveSpouse
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        [ValidateAntiForgeryToken]
+        public ActionResult RemoveSpouse(int personId)
+        {
+            var couple = Database.Couples.SingleOrDefault(c => c.HusbandId == personId || c.WifeId == personId);
+            Database.Couples.Remove(couple);
+            Database.SaveChanges();
+            return RedirectToAction("Edit", new { id = personId, success = true });
         }
 
         // GET: /People/ProfilePhoto/5

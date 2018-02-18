@@ -15,7 +15,6 @@ namespace OPA.Entities
         public int Id { get; set; }
         public int HusbandId { get; set; }
         public int? WifeId { get; set; }
-        public bool Active { get; set; }
 
         public virtual Person Husband { get; set; }
         public virtual Person Wife { get; set; }

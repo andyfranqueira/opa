@@ -99,4 +99,43 @@ namespace OPA.Models
             Active = person.Active;
         }
     }
+
+    public class CoupleViewModel
+    {
+        public CoupleViewModel()
+        {
+        }
+
+        public CoupleViewModel(Couple couple)
+        {
+            MapToCoupleViewModel(couple);
+        }
+
+        public int Id { get; set; }
+        public int HusbandId { get; set; }
+        [Required]
+        public int? WifeId { get; set; }
+
+        public PersonViewModel Husband { get; set; }
+        public PersonViewModel Wife { get; set; }
+
+        public Couple MapToCouple()
+        {
+            return new Couple
+            {
+                Id = Id,
+                HusbandId = HusbandId,
+                WifeId = WifeId
+            };
+        }
+
+        private void MapToCoupleViewModel(Couple couple)
+        {
+            Id = couple.Id;
+            HusbandId = couple.HusbandId;
+            WifeId = couple.WifeId;
+            Husband = new PersonViewModel(couple.Husband);
+            Wife = new PersonViewModel(couple.Wife);
+        }
+    }
 }

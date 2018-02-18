@@ -201,7 +201,6 @@
     <Compile Include="BusinessLogic\PersonLogic.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
-    <Compile Include="Controllers\CoupleController.cs" />
     <Compile Include="Controllers\PaymentController.cs" />
     <Compile Include="Controllers\FinancialController.cs" />
     <Compile Include="Controllers\ContactController.cs" />
@@ -213,7 +212,6 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
-    <Compile Include="Models\CoupleViewModel.cs" />
     <Compile Include="Models\PaymentViewModel.cs" />
     <Compile Include="Models\OrganizationViewModel.cs" />
     <Compile Include="Models\FinancialViewModels.cs" />
@@ -637,9 +635,6 @@
     <Content Include="Views\Financial\EditPledge.cshtml" />
     <Content Include="Views\Contact\CreateAddress.cshtml" />
     <Content Include="Views\Contact\EditAddress.cshtml" />
-    <Content Include="Views\Couple\Create.cshtml" />
-    <Content Include="Views\Couple\Edit.cshtml" />
-    <Content Include="Views\Couple\Index.cshtml" />
     <Content Include="Views\Shared\_Header.cshtml" />
     <Content Include="Views\Shared\_Footer.cshtml" />
     <Content Include="Views\Shared\Info.cshtml" />

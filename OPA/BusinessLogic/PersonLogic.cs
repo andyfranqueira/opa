@@ -49,17 +49,12 @@ namespace OPA.BusinessLogic
 
         public bool IsMarried(int? personId)
         {
-            return Database.Couples.Any(c => (c.HusbandId == personId || c.WifeId == personId) && c.Active);
+            return Database.Couples.Any(c => c.HusbandId == personId || c.WifeId == personId);
         }
 
         public Couple GetCouple(Person person)
         {
-            return Database.Couples.SingleOrDefault(c => (c.HusbandId == person.Id || c.WifeId == person.Id) && c.Active);
-        }
-
-        public int? GetCoupleId(int? personId)
-        {
-            return Database.Couples.SingleOrDefault(c => (c.HusbandId == personId || c.WifeId == personId) && c.Active)?.Id;
+            return Database.Couples.SingleOrDefault(c => c.HusbandId == person.Id || c.WifeId == person.Id);
         }
 
         public IEnumerable<Person> GetParents(Person person)
@@ -117,7 +112,7 @@ namespace OPA.BusinessLogic
             var ageCheck = DateTime.Today.AddYears(-18);
             if (sex == Sex.Male)
             {
-                var husbands = Database.Couples.Where(c => c.Active).Select(c => c.HusbandId);
+                var husbands = Database.Couples.Select(c => c.HusbandId);
 
                 return Database
                     .People
@@ -128,7 +123,7 @@ namespace OPA.BusinessLogic
 
             if (sex == Sex.Female)
             {
-                var wives = Database.Couples.Where(c => c.Active).Select(c => c.WifeId);
+                var wives = Database.Couples.Select(c => c.WifeId);
 
                 return Database
                     .People
