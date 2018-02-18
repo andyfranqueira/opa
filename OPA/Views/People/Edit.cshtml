@@ -184,12 +184,12 @@
                 {
                     if (Model.Spouse == null)
                     {
-                        @Html.ActionLink("Add a spouse", "Create", "Couple", null, new { @class = "btn btn-default" })
+                        @Html.ActionLink("Add a spouse", "AddSpouse", "People", new { id = Model.Id }, new { @class = "btn btn-default modal-link" })
                     }
                     if ((Model.DateOfBirth ?? DateTime.Today.AddYears(-18)) <= DateTime.Today.AddYears(-18))
                     {
                         <span></span>
-                            @Html.ActionLink("Add a child record", "Create", new { parentId = Model.Id }, new { @class = "btn btn-default" })
+                        @Html.ActionLink("Add a child record", "Create", new { parentId = Model.Id }, new { @class = "btn btn-default" })
                     }
                 }
                 else

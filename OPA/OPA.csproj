@@ -658,6 +658,7 @@
     <Content Include="Views\Financial\Donations.cshtml" />
     <Content Include="Views\Home\ValueSets.cshtml" />
     <Content Include="Views\Home\CreateValue.cshtml" />
+    <Content Include="Views\People\AddSpouse.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -159,6 +159,61 @@ namespace OPA.Controllers
             return View(model);
         }
 
+        // GET: /People/AddSpouse
+        [Authorize(Roles = "Admin")]
+        public ActionResult AddSpouse(int? id)
+        {
+            if (id == null || PersonHelper.IsMarried(id))
+            {
+                return HttpNotFound();
+            }
+
+            var person = Database.People.SingleOrDefault(p => p.Id == id);
+            if (person == null)
+            {
+                return HttpNotFound();
+            }
+
+            var model = new CoupleViewModel
+            {
+                HusbandId = person.Sex == Sex.Male ? person.Id : 0,
+                WifeId = person.Sex == Sex.Female ? person.Id : 0,
+                Active = true
+            };
+
+            ViewBag.PersonId = person.Id;
+            ViewBag.EligibleMates = PersonHelper.GetEligibleMates(person.Sex);
+            return PartialView(model);
+        }
+
+        // POST: /People/AddSpouse
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        [ValidateAntiForgeryToken]
+        public ActionResult AddSpouse([Bind(Include = "Id,HusbandId,WifeId,Active")] CoupleViewModel model, int personId)
+        {
+            if (ModelState.IsValid)
+            {
+                var couple = model.MapToCouple();
+
+                var existingCouple = Database.Couples.SingleOrDefault(c => c.HusbandId == couple.HusbandId && c.WifeId == couple.WifeId && !c.Active);
+                if (existingCouple != null)
+                {
+                    existingCouple.Active = couple.Active;
+                    Database.Entry(existingCouple).State = EntityState.Modified;
+                }
+                else
+                {
+                    Database.Couples.Add(couple);
+                }
+
+                Database.SaveChanges();
+                return RedirectToAction("Edit", new { id = personId, success = true });
+            }
+
+            return RedirectToAction("AddSpouse", new { personId = personId, success = true });
+        }
+
         // GET: /People/ProfilePhoto/5
         [HttpGet]
         public ActionResult ProfilePhoto(int? id)

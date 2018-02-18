@@ -1,0 +1,57 @@
+﻿@**
+    *  Copyright 2018 Andrew Franqueira
+    *
+    *  This file is part of OPA.
+    *  Licensed under GNU General Public License 3.0 or later.
+    *  Some rights reserved. See COPYING.
+    *
+    *  @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
+*@
+
+@model OPA.Models.CoupleViewModel
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">&times;</button>
+    <h3 class="modal-title">Add a Spouse</h3>
+</div>
+
+<div class="modal-body">
+    @using (Html.BeginForm("AddSpouse", "People", new { personId = ViewBag.PersonId }, FormMethod.Post, new { id = "contact-form" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-horizontal">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @Html.HiddenFor(model => model.Active)
+
+            @if (Model.HusbandId == 0)
+            {
+                @Html.HiddenFor(model => model.WifeId)
+                <div class="form-group">
+                    <label class="control-label col-md-2" for="HusbandId">Spouse</label>
+                    <div class="col-md-8">
+                        @Html.DropDownListFor(model => model.HusbandId, (List<SelectListItem>)ViewBag.EligibleMates, "", new { @class = "form-control" })
+                    </div>
+                </div>
+            }
+            else
+            {
+                @Html.HiddenFor(model => model.HusbandId)
+                <div class="form-group">
+                    <label class="control-label col-md-2" for="WifeId">Spouse</label>
+                    <div class="col-md-8">
+                        @Html.DropDownListFor(model => model.WifeId, (List<SelectListItem>)ViewBag.EligibleMates, "", new { @class = "form-control" })
+                    </div>
+                </div>
+            }
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-8">
+                    <input type="submit" value="Save" class="btn btn-default" />
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    @Html.ActionLink("Add a new person", "Create", "People", null, new { @class = "btn btn-default pull-right" })
+                </div>
+            </div>
+        </div>
+    }
+</div>

@@ -99,6 +99,19 @@ namespace OPA.BusinessLogic
             return family.Distinct();
         }
 
+        public IEnumerable<SelectListItem> GetEligibleMates(Sex sex)
+        {
+            switch (sex)
+            {
+                case Sex.Male:
+                    return GetEligibleSingles(Sex.Female);
+                case Sex.Female:
+                    return GetEligibleSingles(Sex.Male);
+                default:
+                    return null;
+            }
+        }
+
         public IEnumerable<SelectListItem> GetEligibleSingles(Sex sex)
         {
             var ageCheck = DateTime.Today.AddYears(-18);
