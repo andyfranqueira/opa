@@ -59,7 +59,12 @@ namespace OPA.Controllers
         [Authorize(Roles = "Admin")]
         public ActionResult Create(int? parentId)
         {
-            var model = new PersonViewModel { ParentId = parentId, ForCouple = PersonHelper.IsMarried(parentId) };
+            var model = new PersonViewModel
+            {
+                ParentId = parentId,
+                ForCouple = parentId != null && PersonHelper.IsMarried((int)parentId)
+            };
+
             ViewBag.MemberTypeList = PersonHelper.GetMemberTypeList();
             return View(model);
         }
@@ -80,9 +85,9 @@ namespace OPA.Controllers
 
                     if (model.ForCouple)
                     {
-                        var couple = PersonHelper.GetCouple(parent);
-                        person.FatherId = couple.HusbandId;
-                        person.MotherId = couple.WifeId;
+                        var spouse = PersonHelper.GetSpouse(parent.Id);
+                        person.FatherId = parent.Sex == Sex.Male ? parent.Id : spouse.Id;
+                        person.MotherId = parent.Sex == Sex.Female ? parent.Id : spouse.Id;
                     }
                     else if (parent.Sex == Sex.Male)
                     {
@@ -128,10 +133,9 @@ namespace OPA.Controllers
                 Contacts = person.Contacts.Select(c => new ContactViewModel(c)).ToList()
             };
 
-            var couple = PersonHelper.GetCouple(person);
-            if (couple != null)
+            var spouse = PersonHelper.GetSpouse(person.Id);
+            if (spouse != null)
             {
-                var spouse = couple.HusbandId == person.Id ? couple.Wife : couple.Husband;
                 model.Spouse = new PersonViewModel(spouse);
             }
 
@@ -163,21 +167,20 @@ namespace OPA.Controllers
         [Authorize(Roles = "Admin")]
         public ActionResult AddSpouse(int? id)
         {
-            if (id == null || PersonHelper.IsMarried(id))
+            if (id == null)
             {
                 return HttpNotFound();
             }
 
             var person = Database.People.SingleOrDefault(p => p.Id == id);
-            if (person == null)
+            if (person == null || PersonHelper.IsMarried((int)id))
             {
                 return HttpNotFound();
             }
 
             var model = new CoupleViewModel
             {
-                HusbandId = person.Sex == Sex.Male ? person.Id : 0,
-                WifeId = person.Sex == Sex.Female ? person.Id : 0
+                Person1Id = person.Id
             };
 
             ViewBag.PersonId = person.Id;
@@ -189,23 +192,23 @@ namespace OPA.Controllers
         [HttpPost]
         [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
-        public ActionResult AddSpouse([Bind(Include = "Id,HusbandId,WifeId")] CoupleViewModel model, int personId)
+        public ActionResult AddSpouse([Bind(Include = "Id,Person1Id,Person2Id")] CoupleViewModel model)
         {
             if (ModelState.IsValid)
             {
                 var couple = model.MapToCouple();
 
-                var existingCouple = Database.Couples.SingleOrDefault(c => c.HusbandId == couple.HusbandId && c.WifeId == couple.WifeId);
+                var existingCouple = Database.Couples.SingleOrDefault(c => c.Person1Id == couple.Person1Id && c.Person2Id == couple.Person2Id);
                 if (existingCouple == null)
                 {
                     Database.Couples.Add(couple);
                 }
 
                 Database.SaveChanges();
-                return RedirectToAction("Edit", new { id = personId, success = true });
+                return RedirectToAction("Edit", new { id = model.Person1Id, success = true });
             }
 
-            return RedirectToAction("AddSpouse", new { personId = personId, success = true });
+            return RedirectToAction("AddSpouse");
         }
 
         // POST: /People/RemoveSpouse
@@ -214,7 +217,7 @@ namespace OPA.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult RemoveSpouse(int personId)
         {
-            var couple = Database.Couples.SingleOrDefault(c => c.HusbandId == personId || c.WifeId == personId);
+            var couple = Database.Couples.SingleOrDefault(c => c.Person1Id == personId || c.Person2Id == personId);
             Database.Couples.Remove(couple);
             Database.SaveChanges();
             return RedirectToAction("Edit", new { id = personId, success = true });

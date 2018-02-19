@@ -23,26 +23,13 @@
         <div class="form-horizontal">
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-            @if (Model.HusbandId == 0)
-            {
-                @Html.HiddenFor(model => model.WifeId)
-                <div class="form-group">
-                    <label class="control-label col-md-2" for="HusbandId">Spouse</label>
-                    <div class="col-md-8">
-                        @Html.DropDownListFor(model => model.HusbandId, (List<SelectListItem>)ViewBag.EligibleMates, "", new { @class = "form-control" })
-                    </div>
+            @Html.HiddenFor(model => model.Person1Id)
+            <div class="form-group">
+                @Html.LabelFor(model => model.Person2Id, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-8">
+                    @Html.DropDownListFor(model => model.Person2Id, (List<SelectListItem>)ViewBag.EligibleMates, "", new { @class = "form-control" })
                 </div>
-            }
-            else
-            {
-                @Html.HiddenFor(model => model.HusbandId)
-                <div class="form-group">
-                    <label class="control-label col-md-2" for="WifeId">Spouse</label>
-                    <div class="col-md-8">
-                        @Html.DropDownListFor(model => model.WifeId, (List<SelectListItem>)ViewBag.EligibleMates, "", new { @class = "form-control" })
-                    </div>
-                </div>
-            }
+            </div>
 
             <div class="form-group">
                 <div class="col-md-offset-2 col-md-8">

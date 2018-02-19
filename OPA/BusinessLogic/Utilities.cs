@@ -215,7 +215,7 @@ namespace OPA.BusinessLogic
             }
         }
 
-        [SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
+        [SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "Inherent")]
         public static byte[] GenerateWordDocument(string template, Dictionary<string, string> fieldValues)
         {
             using (var memoryStream = new MemoryStream())

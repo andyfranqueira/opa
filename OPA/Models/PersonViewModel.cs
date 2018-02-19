@@ -102,40 +102,23 @@ namespace OPA.Models
 
     public class CoupleViewModel
     {
-        public CoupleViewModel()
-        {
-        }
-
-        public CoupleViewModel(Couple couple)
-        {
-            MapToCoupleViewModel(couple);
-        }
-
         public int Id { get; set; }
-        public int HusbandId { get; set; }
-        [Required]
-        public int? WifeId { get; set; }
+        public int Person1Id { get; set; }
 
-        public PersonViewModel Husband { get; set; }
-        public PersonViewModel Wife { get; set; }
+        [Display(Name = "Spouse")]
+        public int Person2Id { get; set; }
+
+        public PersonViewModel Person1 { get; set; }
+        public PersonViewModel Person2 { get; set; }
 
         public Couple MapToCouple()
         {
             return new Couple
             {
                 Id = Id,
-                HusbandId = HusbandId,
-                WifeId = WifeId
+                Person1Id = Person1Id,
+                Person2Id = Person2Id
             };
-        }
-
-        private void MapToCoupleViewModel(Couple couple)
-        {
-            Id = couple.Id;
-            HusbandId = couple.HusbandId;
-            WifeId = couple.WifeId;
-            Husband = new PersonViewModel(couple.Husband);
-            Wife = new PersonViewModel(couple.Wife);
         }
     }
 }

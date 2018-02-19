@@ -14,7 +14,6 @@ using System.Linq;
 using System.Net.Mime;
 using System.Web.Mvc;
 using OPA.BusinessLogic;
-using OPA.Entities;
 using OPA.Models;
 
 namespace OPA.Controllers
@@ -283,14 +282,7 @@ namespace OPA.Controllers
 
             var template = Server.MapPath(FinancialLogic.ReceiptTemplate);
 
-            var couple = PersonHelper.GetCouple(donation.Person);
-            Person spouse = null;
-
-            if (couple != null)
-            {
-                spouse = couple.HusbandId == donation.Person.Id ? couple.Wife : couple.Husband;
-            }
-
+            var spouse = PersonHelper.GetSpouse(donation.Person.Id);
             var fieldValues = FinancialHelper.ReceiptData(donation, spouse);
             var output = Utilities.GenerateWordDocument(template, fieldValues);
             return File(output, MediaTypeNames.Application.Octet, "Receipt-" + id + ".docx");

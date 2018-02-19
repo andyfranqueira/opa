@@ -13,10 +13,10 @@ namespace OPA.Entities
     public class Couple
     {
         public int Id { get; set; }
-        public int HusbandId { get; set; }
-        public int? WifeId { get; set; }
+        public int Person1Id { get; set; }
+        public int? Person2Id { get; set; }
 
-        public virtual Person Husband { get; set; }
-        public virtual Person Wife { get; set; }
+        public virtual Person Person1 { get; set; }
+        public virtual Person Person2 { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-﻿// <copyright file="ConfigureAuth.cs" company="The OPA Project">
+﻿// <copyright file="AuthConfig.cs" company="The OPA Project">
 //   Copyright 2018 Andrew Franqueira
 //  
 //   This file is part of OPA.

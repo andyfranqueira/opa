@@ -47,14 +47,20 @@ namespace OPA.BusinessLogic
             return Database.People.FirstOrDefault(p => p.DonorId == donorId);
         }
 
-        public bool IsMarried(int? personId)
+        public bool IsMarried(int personId)
         {
-            return Database.Couples.Any(c => c.HusbandId == personId || c.WifeId == personId);
+            return Database.Couples.Any(c => c.Person1Id == personId || c.Person2Id == personId);
         }
 
-        public Couple GetCouple(Person person)
+        public Person GetSpouse(int personId)
         {
-            return Database.Couples.SingleOrDefault(c => c.HusbandId == person.Id || c.WifeId == person.Id);
+            var couple = Database.Couples.SingleOrDefault(c => c.Person1Id == personId || c.Person2Id == personId);
+            if (couple != null)
+            {
+                return couple.Person1Id == personId ? couple.Person2 : couple.Person1;
+            }
+
+            return null;
         }
 
         public IEnumerable<Person> GetParents(Person person)
@@ -82,10 +88,9 @@ namespace OPA.BusinessLogic
             family.AddRange(GetChildren(person));
 
             // Add spouse, spouse's parents & children to list
-            var couple = GetCouple(person);
-            if (couple != null)
+            var spouse = GetSpouse(person.Id);
+            if (spouse != null)
             {
-                var spouse = couple.HusbandId == person.Id ? couple.Wife : couple.Husband;
                 family.Add(spouse);
                 family.AddRange(GetParents(spouse));
                 family.AddRange(GetChildren(spouse));
@@ -94,45 +99,31 @@ namespace OPA.BusinessLogic
             return family.Distinct();
         }
 
-        public IEnumerable<SelectListItem> GetEligibleMates(Sex sex)
+        public IEnumerable<SelectListItem> GetEligibleMates(Sex personSex)
         {
-            switch (sex)
+            var ageCheck = DateTime.Today.AddYears(-18);
+            Sex mateSex;
+
+            switch (personSex)
             {
                 case Sex.Male:
-                    return GetEligibleSingles(Sex.Female);
+                    mateSex = Sex.Female;
+                    break;
                 case Sex.Female:
-                    return GetEligibleSingles(Sex.Male);
+                    mateSex = Sex.Male;
+                    break;
                 default:
                     return null;
             }
-        }
 
-        public IEnumerable<SelectListItem> GetEligibleSingles(Sex sex)
-        {
-            var ageCheck = DateTime.Today.AddYears(-18);
-            if (sex == Sex.Male)
-            {
-                var husbands = Database.Couples.Select(c => c.HusbandId);
+            var coupleIds = Database.Couples.Select(c => c.Person1Id).ToList();
+            coupleIds.AddRange(Database.Couples.Select(c => (int)c.Person2Id));
 
-                return Database
-                    .People
-                    .Where(p => p.Sex == Sex.Male && !husbands.Contains(p.Id) && (p.DateOfBirth ?? ageCheck) <= ageCheck)
-                    .Select(p => new SelectListItem { Value = p.Id.ToString(), Text = p.LastName + ", " + p.FirstName })
-                    .OrderBy(i => i.Text).ToList();
-            }
-
-            if (sex == Sex.Female)
-            {
-                var wives = Database.Couples.Select(c => c.WifeId);
-
-                return Database
-                    .People
-                    .Where(p => p.Sex == Sex.Female && !wives.Contains(p.Id) && (p.DateOfBirth ?? ageCheck) <= ageCheck)
-                    .Select(p => new SelectListItem { Value = p.Id.ToString(), Text = p.LastName + ", " + p.FirstName })
-                    .OrderBy(i => i.Text).ToList();
-            }
-
-            return null;
+            return Database
+                .People
+                .Where(p => p.Sex == mateSex && !coupleIds.Contains(p.Id) && (p.DateOfBirth ?? ageCheck) <= ageCheck)
+                .Select(p => new SelectListItem { Value = p.Id.ToString(), Text = p.LastName + ", " + p.FirstName })
+                .OrderBy(i => i.Text).ToList();
         }
 
         public string GetProfilePhoto(int personId, bool find = true)
