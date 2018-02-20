@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
+using OPA.BusinessLogic;
 using OPA.Entities;
 
 namespace OPA.Models
@@ -79,7 +80,7 @@ namespace OPA.Models
             PersonId = pledge.PersonId;
             DonorInfo = pledge.Person.LastName.Contains("Anonymous")
                 ? pledge.Person.LastName
-                : pledge.Person.FirstName + " " + pledge.Person.LastName;
+                : Utilities.FormatName(pledge.Person);
         }
     }
 
@@ -171,7 +172,7 @@ namespace OPA.Models
             DonorInfo = donation.Person != null
                 ? (donation.Person.LastName.Contains("Anonymous")
                 ? donation.Person.LastName
-                : donation.Person.FirstName + " " + donation.Person.LastName)
+                : Utilities.FormatName(donation.Person))
                 : donation.Organization.Name;
         }
     }

@@ -129,21 +129,27 @@ namespace OPA.Controllers
                 return HttpNotFound();
             }
 
-            ViewBag.PersonId = personId;
-            ViewBag.OrganizationId = organizationId;
-
-            if (personId != null)
+            var model = new ContactAddressViewModel
             {
-                ViewBag.ExistingAddresses = ContactHelper.GetEligibleAddressList(personId);
+                PersonId = personId,
+                OrganizationId = organizationId
+            };
+
+            if (personId != null 
+                && (PersonHelper.GetSpouse(personId.Value) != null 
+                 || PersonHelper.GetChildren(personId.Value).Any()))
+            {
+                model.EligibleAddressList = ContactHelper.GetEligibleAddressList(personId.Value).ToList();
+                model.ForFamily = true;
             }
 
-            return PartialView();
+            return PartialView(model);
         }
 
         // POST: /Contact/CreateAddress
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult CreateAddress([Bind(Include = "Id,PersonId,OrganizationId,AddressId,AddressLine,City,State,PostalCode,Country")] ContactAddressViewModel model)
+        public ActionResult CreateAddress([Bind(Include = "Id,PersonId,OrganizationId,ForFamily,AddressId,AddressLine,City,State,PostalCode,Country")] ContactAddressViewModel model)
         {
             if (!UserCanEdit(model.PersonId, model.OrganizationId))
             {
@@ -152,7 +158,11 @@ namespace OPA.Controllers
 
             if (model.AddressId == null && !ModelState.IsValid)
             {
-                ViewBag.ExistingAddresses = ContactHelper.GetEligibleAddressList(model.PersonId);
+                if (model.PersonId != null && model.ForFamily)
+                {
+                    model.EligibleAddressList = ContactHelper.GetEligibleAddressList(model.PersonId.Value).ToList();
+                }
+
                 return View(model);
             }
 
@@ -167,6 +177,11 @@ namespace OPA.Controllers
             var contactAddress = model.MapToContactAddress();
             Database.ContactAddresses.Add(contactAddress);
             Database.SaveChanges();
+
+            if (model.ForFamily && model.PersonId != null && model.AddressId != null)
+            {
+                ContactHelper.SetAddressForFamily(model.PersonId.Value, model.AddressId.Value);
+            }
 
             return ReturnToSender(model.PersonId, model.OrganizationId);
         }
@@ -215,10 +230,26 @@ namespace OPA.Controllers
             return PartialView(model);
         }
 
+        // GET: /Contact/DeleteAddress/5
+        public ActionResult DeleteAddress(int? contactAddressId)
+        {
+            var contactAddress = Database.ContactAddresses.Find(contactAddressId);
+            var address = Database.Addresses.Find(contactAddress.AddressId);
+            var personId = contactAddress.PersonId;
+
+            ViewBag.ContactAddressId = contactAddressId;
+            if (personId != null)
+            {
+                ViewBag.FamilyAddress = ContactHelper.IsFamilyAddress(personId.Value, address.Id);
+            }
+
+            return PartialView();
+        }
+
         // POST: /Contact/DeleteAddress/5
         [HttpPost, ActionName("DeleteAddress")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteAddressConfirmed(int contactAddressId)
+        public ActionResult DeleteAddress(int contactAddressId, bool deleteAll)
         {
             var contactAddress = Database.ContactAddresses.Find(contactAddressId);
             var address = Database.Addresses.Find(contactAddress.AddressId);
@@ -233,6 +264,16 @@ namespace OPA.Controllers
             Database.ContactAddresses.Remove(contactAddress);
             Database.SaveChanges();
 
+            if (deleteAll)
+            {
+                foreach (var entry in Database.ContactAddresses.Where(c => c.AddressId == address.Id).ToList())
+                {
+                    Database.ContactAddresses.Remove(entry);
+                }
+
+                Database.SaveChanges();
+            }
+
             if (!Database.ContactAddresses.Any(c => c.AddressId == address.Id))
             {
                 Database.Addresses.Remove(address);
@@ -245,8 +286,7 @@ namespace OPA.Controllers
         private bool UserCanEdit(int? personId, int? organizationId)
         {
             return !(personId != null && organizationId != null)
-                   && ((personId != null && UserHelper.UserCanEditPerson(User, personId))
-                       || (organizationId != null && User.IsInRole("Admin")));
+                   && (UserHelper.UserCanEditPerson(User, personId) || User.IsInRole("Admin"));
         }
 
         private RedirectResult ReturnToSender(int? personId, int? organizationId)

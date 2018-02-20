@@ -92,7 +92,7 @@ namespace OPA.Models
             LastName = person.LastName;
             FirstName = person.FirstName;
             MiddleName = person.MiddleName;
-            FullName = Utilities.FormatName(person);
+            FullName = Utilities.FormatName(person, true);
             Sex = person.Sex;
             DateOfBirth = person.DateOfBirth;
             MemberType = person.MemberType;

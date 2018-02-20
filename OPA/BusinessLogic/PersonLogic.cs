@@ -71,32 +71,19 @@ namespace OPA.BusinessLogic
             return parents;
         }
 
-        public IEnumerable<Person> GetChildren(Person person)
+        public IEnumerable<Person> GetChildren(int personId, int? spouseId = null)
         {
             var children = new List<Person>();
-            children.AddRange(Database.People.Where(p => p.FatherId == person.Id));
-            children.AddRange(Database.People.Where(p => p.MotherId == person.Id));
-            return children.OrderBy(c => c.DateOfBirth);
-        }
+            children.AddRange(Database.People.Where(p => p.FatherId == personId));
+            children.AddRange(Database.People.Where(p => p.MotherId == personId));
 
-        public IEnumerable<Person> GetImmediateFamily(Person person)
-        {
-            var family = new List<Person> { person };
-
-            // Add person, person's parents & children to list
-            family.AddRange(GetParents(person));
-            family.AddRange(GetChildren(person));
-
-            // Add spouse, spouse's parents & children to list
-            var spouse = GetSpouse(person.Id);
-            if (spouse != null)
+            if (spouseId != null)
             {
-                family.Add(spouse);
-                family.AddRange(GetParents(spouse));
-                family.AddRange(GetChildren(spouse));
+                children.AddRange(Database.People.Where(p => p.FatherId == spouseId));
+                children.AddRange(Database.People.Where(p => p.MotherId == spouseId));
             }
 
-            return family.Distinct();
+            return children.Distinct().OrderBy(c => c.DateOfBirth);
         }
 
         public IEnumerable<SelectListItem> GetEligibleMates(Sex personSex)

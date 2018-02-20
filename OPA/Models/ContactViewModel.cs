@@ -8,7 +8,9 @@
 //   @license GPL-3.0+ http://spdx.org/licenses/GPL-3.0+
 // </copyright>
 
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Web.Mvc;
 using OPA.Entities;
 
 namespace OPA.Models
@@ -69,9 +71,15 @@ namespace OPA.Models
             MapToContactAddressViewModel(contactAddress);
         }
 
+        public List<SelectListItem> EligibleAddressList { get; set; }
+
         public int Id { get; set; }
         public int? PersonId { get; set; }
         public int? OrganizationId { get; set; }
+
+        [Display(Name = "Apply to Family")]
+        public bool ForFamily { get; set; }
+
         public int? AddressId { get; set; }
 
         [Required]

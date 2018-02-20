@@ -34,27 +34,66 @@ namespace OPA.BusinessLogic
                 .ToList();
         }
 
-        public IEnumerable<Address> GetFamilyAddresses(Person person)
+        public IEnumerable<SelectListItem> GetEligibleAddressList(int personId)
         {
-            var personHelper = new PersonLogic(Database);
-            var familyIds = personHelper.GetImmediateFamily(person).Select(p => (int?)p.Id).ToList();
-            return Database.ContactAddresses.Where(c => familyIds.Contains(c.PersonId)).Select(c => c.Address).Distinct().ToList();
-        }
+            var familyIds = GetFamilyIds(personId);
 
-        public IEnumerable<SelectListItem> GetEligibleAddressList(int? personId)
-        {
-            var person = Database.People.Find(personId);
+            var currentAddressIds = Database
+                .ContactAddresses
+                .Where(c => c.PersonId == personId)
+                .Select(c => c.AddressId);
 
-            var familyAddresses = GetFamilyAddresses(person);
-            var currentAddresses = Database.ContactAddresses.Where(c => c.PersonId == personId).Select(c => c.AddressId);
+            var familyAddresses = Database
+                .ContactAddresses
+                .Where(c => c.PersonId != null && familyIds.Contains(c.PersonId.Value))
+                .Select(c => c.Address)
+                .Distinct()
+                .ToList();
 
-            var addressList = new List<SelectListItem>();
-            foreach (var address in familyAddresses.Where(a => !currentAddresses.Contains(a.Id)))
+            var eligibleAddresses = new List<SelectListItem>();
+            foreach (var address in familyAddresses.Where(a => !currentAddressIds.Contains(a.Id)))
             {
-                addressList.Add(new SelectListItem { Value = address.Id.ToString(), Text = Utilities.FormatAddress(address) });
+                eligibleAddresses.Add(new SelectListItem
+                {
+                    Value = address.Id.ToString(),
+                    Text = Utilities.FormatAddress(address)
+                });
             }
 
-            return addressList.OrderBy(i => i.Text).ToList();
+            return eligibleAddresses.OrderBy(i => i.Text).ToList();
+        }
+
+        public void SetAddressForFamily(int personId, int addressId)
+        {
+            foreach (var id in GetFamilyIds(personId))
+            {
+                if (!Database.ContactAddresses.Any(a => a.PersonId == id && a.AddressId == addressId))
+                {
+                    Database.ContactAddresses.Add(new ContactAddress { PersonId = id, AddressId = addressId });
+                    Database.SaveChanges();
+                }
+            }
+        }
+
+        public bool IsFamilyAddress(int personId, int addressId)
+        {
+            var familyIds = GetFamilyIds(personId);
+            return Database.ContactAddresses.Any(c => c.PersonId != null && familyIds.Contains(c.PersonId.Value) && c.AddressId == addressId);
+        }
+
+        private List<int> GetFamilyIds(int personId)
+        {
+            var personHelper = new PersonLogic(Database);
+            var familyIds = new List<int>();
+
+            var spouse = personHelper.GetSpouse(personId);
+            if (spouse != null)
+            {
+                familyIds.Add(spouse.Id);
+            }
+
+            familyIds.AddRange(personHelper.GetChildren(personId, spouse?.Id).Select(p => p.Id));
+            return familyIds;
         }
     }
 }

@@ -36,15 +36,10 @@ namespace OPA.Controllers
                     RedirectToAction("Index", "Manage");
             }
 
-            var people = Database.People.Where(p => !p.LastName.Contains("Anonymous")).ToList();
-
-            if (UserHelper.IsOwnerAdmin())
+            var people = Database.People.ToList();
+            if (!UserHelper.IsOwnerAdmin())
             {
-                var anonymous = Database.People.SingleOrDefault(p => p.LastName.Contains("Anonymous"));
-                if (anonymous != null)
-                {
-                    people.Add(anonymous);
-                }
+                people.RemoveAll(p => p.LastName.Contains("Anonymous"));
             }
 
             var peopleViewModel = people
@@ -62,7 +57,7 @@ namespace OPA.Controllers
             var model = new PersonViewModel
             {
                 ParentId = parentId,
-                ForCouple = parentId != null && PersonHelper.IsMarried((int)parentId)
+                ForCouple = parentId != null && PersonHelper.IsMarried(parentId.Value)
             };
 
             ViewBag.MemberTypeList = PersonHelper.GetMemberTypeList();
@@ -82,7 +77,6 @@ namespace OPA.Controllers
                 if (model.ParentId != null)
                 {
                     var parent = Database.People.Find(model.ParentId);
-
                     if (model.ForCouple)
                     {
                         var spouse = PersonHelper.GetSpouse(parent.Id);
@@ -112,13 +106,8 @@ namespace OPA.Controllers
         // GET: /People/Edit/5
         public ActionResult Edit(int? id, bool? success)
         {
-            if (id == null || !UserHelper.UserCanEditPerson(User, id))
-            {
-                return HttpNotFound();
-            }
-
             var person = Database.People.SingleOrDefault(p => p.Id == id);
-            if (person == null)
+            if (!UserHelper.UserCanEditPerson(User, id) || person == null)
             {
                 return HttpNotFound();
             }
@@ -126,18 +115,22 @@ namespace OPA.Controllers
             ViewBag.Success = success;
             var model = new PersonViewModel(person)
             {
-                ProfilePhoto = PersonHelper.GetProfilePhoto(person.Id),
-                Parents = PersonHelper.GetParents(person).Select(p => new PersonViewModel(p)).ToList(),
-                Children = PersonHelper.GetChildren(person).Select(p => new PersonViewModel(p)).ToList(),
                 Addresses = person.ContactAddresses.Select(c => new ContactAddressViewModel(c)).ToList(),
-                Contacts = person.Contacts.Select(c => new ContactViewModel(c)).ToList()
+                Contacts = person.Contacts.Select(c => new ContactViewModel(c)).ToList(),
+                ProfilePhoto = PersonHelper.GetProfilePhoto(person.Id)
             };
 
             var spouse = PersonHelper.GetSpouse(person.Id);
-            if (spouse != null)
+            if (spouse != null && UserHelper.UserCanEditPerson(User, spouse.Id))
             {
                 model.Spouse = new PersonViewModel(spouse);
             }
+
+            var parents = PersonHelper.GetParents(person).Where(p => UserHelper.UserCanEditPerson(User, p.Id));
+            var children = PersonHelper.GetChildren(person.Id, spouse?.Id).Where(p => UserHelper.UserCanEditPerson(User, p.Id));
+
+            model.Parents = parents.Select(p => new PersonViewModel(p)).ToList();
+            model.Children = children.Select(p => new PersonViewModel(p)).ToList();
 
             model.Pledges = FinancialHelper.GetPledges(person.Id, model.Spouse?.Id).Select(p => new PledgeViewModel(p)).ToList();
             model.Donations = FinancialHelper.GetDonations(person.Id, model.Spouse?.Id).Select(d => new DonationViewModel(d)).ToList();
@@ -227,7 +220,7 @@ namespace OPA.Controllers
         [HttpGet]
         public ActionResult ProfilePhoto(int? id)
         {
-            if (id == null || !UserHelper.UserCanEditPerson(User, id))
+            if (!UserHelper.UserCanEditPerson(User, id))
             {
                 return HttpNotFound();
             }
@@ -269,9 +262,9 @@ namespace OPA.Controllers
 
         // POST: /People/SaveProfilePhoto
         [HttpPost]
-        public ActionResult SaveProfilePhoto(int? id, string x, string y, string width, string height, string imageSrc)
+        public ActionResult SaveProfilePhoto(int id, string x, string y, string width, string height, string imageSrc)
         {
-            if (id == null || !UserHelper.UserCanEditPerson(User, id))
+            if (!UserHelper.UserCanEditPerson(User, id))
             {
                 return HttpNotFound();
             }
@@ -288,7 +281,7 @@ namespace OPA.Controllers
 
                 image = Utilities.ScaleImage(image, 200, 200);
 
-                var profilePhoto = PersonHelper.GetProfilePhoto((int)id, false);
+                var profilePhoto = PersonHelper.GetProfilePhoto(id, false);
                 image.Save(HttpContext.Server.MapPath(profilePhoto));
                 return Json(new { success = true, imageSrc = profilePhoto });
             }

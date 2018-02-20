@@ -1,0 +1,50 @@
+﻿@**
+    *  Copyright 2018 Andrew Franqueira
+    *
+    *  This file is part of OPA.
+    *  Licensed under GNU General Public License 3.0 or later.
+    *  Some rights reserved. See COPYING.
+    *
+    *  @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
+*@
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">&times;</button>
+    <h3 class="modal-title">Delete Address</h3>
+</div>
+
+<div class="modal-body">
+    @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "address-form" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-horizontal">
+            @Html.Hidden("contactAddressId", new { String = ViewBag.ContactAddressId })
+
+            @if (ViewBag.FamilyAddress)
+            {
+                <p class="alert alert-info">
+                    This address is also set for other family members.
+                </p>
+                <div class="form-group">
+                    @Html.Label("deleteAll", "Delete for all?", htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-4">
+                        @Html.CheckBox("deleteAll", htmlAttributes: new { @class = "form-control check-box", @checked = "checked" })
+                    </div>
+                </div>
+            }
+            else
+            {
+                <p class="alert alert-info">Delete address, are you sure?</p>
+                @Html.Hidden("deleteAll", false)
+            }
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-8">
+                    <input type="submit" value="Delete" class="btn btn-default" />
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    }
+</div>

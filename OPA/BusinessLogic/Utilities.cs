@@ -112,23 +112,25 @@ namespace OPA.BusinessLogic
             return EmailClient().SendMailAsync(mailMessage);
         }
 
-        public static string FormatName(Person person)
+        public static string FormatName(Person person, bool includeMiddleName = false)
         {
             if (person == null)
             {
                 return string.Empty;
             }
 
-            return person.FirstName + " " + person.MiddleName + " " + person.LastName;
+            return person.FirstName + " " 
+                + (includeMiddleName && !string.IsNullOrWhiteSpace(person.MiddleName) ? person.MiddleName + " " : string.Empty)
+                + person.LastName;
         }
 
         public static string FormatAddress(Address address)
         {
-            return address.AddressLine +
-                   ", " + address.City +
-                   ", " + address.State +
-                   ", " + address.PostalCode +
-                   (address.Country != null ? ", " + address.Country : string.Empty);
+            return address.AddressLine 
+                + ", " + address.City 
+                + ", " + address.State 
+                + ", " + address.PostalCode 
+                + (address.Country != null ? ", " + address.Country : string.Empty);
         }
 
         public static bool IsImageFile(HttpPostedFileBase file)

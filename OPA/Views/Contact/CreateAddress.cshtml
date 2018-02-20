@@ -17,31 +17,23 @@
 
 <div class="modal-body">
     @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "address-form" }))
-            {
+    {
         @Html.AntiForgeryToken()
 
         <div class="form-horizontal">
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-            @if (ViewBag.PersonId != null)
-            {
-                @Html.Hidden("PersonId", new { String = ViewBag.PersonId })
-            }
-            @if (ViewBag.OrganizationId != null)
-            {
-                @Html.Hidden("OrganizationId", new { String = ViewBag.OrganizationId })
-            }
+            @Html.HiddenFor(model => model.PersonId)
+            @Html.HiddenFor(model => model.OrganizationId)
 
-            @if (ViewBag.ExistingAddresses != null)
+            @if(Model.EligibleAddressList != null && Model.EligibleAddressList.Any())
             {
                 <div class="form-group">
                     <div class="col-md-12">
-                        @Html.DropDownList("AddressId", (List<SelectListItem>)ViewBag.ExistingAddresses, "Choose an Existing Family Address", new { @class = "form-control" })
+                        @Html.DropDownList("AddressId", Model.EligibleAddressList, "Choose an Existing Family Address...", new { @class = "form-control" })
                     </div>
                 </div>
-
-                <hr />
-                <h4 class="text-center">or Create a New Address</h4>
-                <hr />
+                <h3 class="text-center">or create a new address</h3>
+                <hr/>
             }
 
             <div class="form-group">
@@ -84,6 +76,16 @@
                 </div>
             </div>
 
+            @if (Model.ForFamily)
+            {
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ForFamily, htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-1">
+                        @Html.EditorFor(model => model.ForFamily, new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
+                </div>
+            }
+
             <div class="form-group">
                 <div class="col-md-offset-2 col-md-8">
                     <input type="submit" value="Save" class="btn btn-default" />
@@ -108,9 +110,9 @@
 
         $("#address-form").validate({
             rules: {
-                AddressLine: { required: { depends: function () { return $("#AddressId").val() === ""; } } },
-                City: { required: { depends: function () { return $("#AddressId").val() === ""; } } },
-                State: { required: { depends: function () { return $("#AddressId").val() === ""; } } }
+                AddressLine: { required: { depends: function () { return $("#AddressId").length === 0 || $("#AddressId").val() === ""; } } },
+                City: { required: { depends: function () { return $("#AddressId").length === 0 || $("#AddressId").val() === ""; } } },
+                State: { required: { depends: function () { return $("#AddressId").length === 0 || $("#AddressId").val() === ""; } } }
             }
         });
     });

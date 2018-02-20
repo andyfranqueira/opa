@@ -55,24 +55,28 @@ namespace OPA.BusinessLogic
                 .ToArray();
         }
 
-        public bool UserCanEditPerson(IPrincipal user, int? personToEdit)
+        public bool UserCanEditPerson(IPrincipal user, int? editPersonId)
         {
-            if (user.IsInRole("Admin"))
+            if (editPersonId == null)
+            {
+                return false;
+            }
+
+            var userPerson = GetCurrentUser().Person;
+            if (user.IsInRole("Admin") || userPerson.Id == editPersonId)
             {
                 return true;
             }
 
-            var userPerson = GetCurrentUser().Person;
-            if (userPerson != null && personToEdit != null)
+            var spouse = PersonHelper.GetSpouse(userPerson.Id);
+            if (spouse != null && spouse.Id == editPersonId)
             {
-                var people = PersonHelper.GetImmediateFamily(userPerson);
-                if (people.Select(p => p.Id).Contains((int)personToEdit))
-                {
-                    return true;
-                }
+                return true;
             }
 
-            return false;
+            var editPerson = Database.People.Find(editPersonId);
+            return (editPerson.FatherId != null && (userPerson.Id == editPerson.FatherId || spouse?.Id == editPerson.FatherId))
+                || (editPerson.MotherId != null && (userPerson.Id == editPerson.MotherId || spouse?.Id == editPerson.MotherId));
         }
 
         public int? FindUserPerson(ApplicationUser user)

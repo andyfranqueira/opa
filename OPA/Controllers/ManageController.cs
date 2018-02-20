@@ -170,7 +170,7 @@ namespace OPA.Controllers
                 return HttpNotFound();
             }
 
-            var model = new SupportRequestViewModel { PersonId = (int)personId };
+            var model = new SupportRequestViewModel { PersonId = personId.Value };
             ViewBag.Request = request;
             return PartialView("Request", model);
         }

@@ -74,9 +74,9 @@ namespace OPA.Controllers
         }
 
         // GET: /Financial/EditPledge/5
-        public ActionResult EditPledge(int? id, int? personId)
+        public ActionResult EditPledge(int? id)
         {
-            if (id == null || personId == null)
+            if (id == null)
             {
                 return HttpNotFound();
             }

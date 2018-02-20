@@ -110,11 +110,11 @@ namespace OPA.BusinessLogic
 
         public Dictionary<string, string> ReceiptData(Donation donation, Person spouse)
         {
-            var donorName = donation.Person.FirstName + " " + donation.Person.LastName;
+            var donorName = Utilities.FormatName(donation.Person);
 
             if (spouse != null)
             {
-                donorName = donorName + " and " + spouse.FirstName + " " + spouse.LastName;
+                donorName = donorName + " and " + Utilities.FormatName(spouse);
             }
  
             var address = donation.Person.ContactAddresses.FirstOrDefault()?.Address;

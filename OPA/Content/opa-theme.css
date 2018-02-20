@@ -288,6 +288,15 @@ table {
     font-size: 11px;
 }
 
+.form-horizontal .control-label {
+    padding-top: 5px;
+}
+
+.check-box {
+    width: 1.4em;
+    height: 1.4em;
+}
+
 .dropdown-menu {
     z-index: 2000;
 }
