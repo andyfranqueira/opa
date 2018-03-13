@@ -86,6 +86,17 @@ namespace OPA.Models
             };
         }
 
+        public void UpdatePerson(Person person)
+        {
+            person.LastName = LastName;
+            person.FirstName = FirstName;
+            person.MiddleName = MiddleName;
+            person.Sex = Sex;
+            person.DateOfBirth = DateOfBirth;
+            person.MemberType = MemberType;
+            person.Active = Active;
+        }
+
         private void MapToPersonViewModel(Person person)
         {
             Id = person.Id;

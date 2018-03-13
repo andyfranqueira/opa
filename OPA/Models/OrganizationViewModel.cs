@@ -47,6 +47,12 @@ namespace OPA.Models
             };
         }
 
+        public void UpdateOrganization(Organization organization)
+        {
+            organization.Name = Name;
+            organization.Active = Active;
+        }
+
         private void MapToOrganizationViewModel(Organization organization)
         {
             Id = organization.Id;

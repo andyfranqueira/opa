@@ -9,7 +9,6 @@
 // </copyright>
 
 using System;
-using System.Data.Entity;
 using System.Linq;
 using System.Net.Mime;
 using System.Web.Mvc;
@@ -101,8 +100,8 @@ namespace OPA.Controllers
         {
             if (ModelState.IsValid)
             {
-                var pledge = model.MapToPledge();
-                Database.Entry(pledge).State = EntityState.Modified;
+                var pledge = Database.Pledges.Find(model.Id);
+                model.UpdatePledge(pledge);
                 Database.SaveChanges();
             }
 
@@ -243,8 +242,8 @@ namespace OPA.Controllers
 
             if (ModelState.IsValid)
             {
-                var donation = model.MapToDonation();
-                Database.Entry(donation).State = EntityState.Modified;
+                var donation = Database.Donations.Find(model.Id);
+                model.UpdateDonation(donation);
                 Database.SaveChanges();
             }
 

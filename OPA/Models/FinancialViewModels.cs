@@ -70,6 +70,14 @@ namespace OPA.Models
             return pledge;
         }
 
+        public void UpdatePledge(Pledge pledge)
+        {
+            pledge.Year = Year;
+            pledge.Amount = Amount ?? 0;
+            pledge.Frequency = Frequency;
+            pledge.Fund = Fund;
+        }
+
         private void MapToPledgeViewModel(Pledge pledge)
         {
             Id = pledge.Id;
@@ -146,6 +154,15 @@ namespace OPA.Models
             }
 
             return donation;
+        }
+
+        public void UpdateDonation(Donation donation)
+        {
+            donation.DonationDate = DonationDate ?? DateTime.Today;
+            donation.Amount = Amount ?? 0;
+            donation.Fund = Fund;
+            donation.Designation = Designation;
+            donation.CheckNumber = CheckNumber;
         }
 
         private void MapToDonationViewModel(Donation donation)

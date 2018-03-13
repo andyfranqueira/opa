@@ -8,7 +8,6 @@
 //   @license GPL-3.0+ http://spdx.org/licenses/GPL-3.0+
 // </copyright>
 
-using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using OPA.Models;
@@ -79,8 +78,8 @@ namespace OPA.Controllers
         {
             if (ModelState.IsValid)
             {
-                var organization = model.MapToOrganization();
-                Database.Entry(organization).State = EntityState.Modified;
+                var organization = Database.Organizations.Find(model.Id);
+                model.UpdateOrganization(organization);
                 Database.SaveChanges();
                 return RedirectToAction("Edit", new { id = organization.Id });
             }

@@ -10,7 +10,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
@@ -146,8 +145,8 @@ namespace OPA.Controllers
         {
             if (ModelState.IsValid)
             {
-                var person = model.MapToPerson();
-                Database.Entry(person).State = EntityState.Modified;
+                var person = Database.People.Find(model.Id);
+                model.UpdatePerson(person);
                 Database.SaveChanges();
                 return RedirectToAction("Edit", new { id = person.Id, success = true });
             }

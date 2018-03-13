@@ -116,6 +116,15 @@ namespace OPA.Models
             return address;
         }
 
+        public void UpdateAddress(Address address)
+        {
+            address.AddressLine = AddressLine;
+            address.City = City;
+            address.State = State;
+            address.PostalCode = PostalCode;
+            address.Country = Country;
+        }
+
         public ContactAddress MapToContactAddress()
         {
             return new ContactAddress
