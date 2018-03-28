@@ -1,10 +1,28 @@
 <h1>OPA: Online Parish Administration</h1>
 
-A lightweight, CRM web application, designed for tracking church members & donations.  Admin accounts can manage member information, electronic payments, and track donations.  Members can access their own records online and view/update their information.
-Designed to be extremely simple, the application can be easily tailored for use by any faith group, non-profit, club, etc.
+A lightweight, CRM web application, designed for tracking church members, pledges &amp; donations.  Admin accounts can manage member information, pledges, donations, and electronic payments.  Members can access their own records online and view/update their information.  Designed to be extremely simple, the application can be easily tailored for use by any non-profit, faith group, club, etc.
 
 Released under GNU General Public License v3.0
 
+<h2>Objectives</h2>
+<ul>
+    <li>Manage group members and financial details with simplicity and accuracy.</li>
+    <li>Enable members to use the system to manage their own details, pledges &amp; donations.</li>
+    <li>Can be implemented and supported by semi-skilled volunteers for a low cost.</li>
+    <li>Should be robust so that volunteers do not need to address issues with code changes.</li>
+</ul>
+
+<h2>Scope</h2>
+<ul>
+    <li>Functionality will cover member details and the tracking of pledges &amp; donations.</li>
+    <li>The user experience will be simple and intuitive, with minimal steps and data entry.</li>
+    <li>The application will use a mobile first philosophy.</li>
+    <li>The application will be generic. Any customizations must be simple to enable and configure.</li>
+    <li>Integrations make the application dependent on other systems and will be approached with caution.</li>
+    <li>Any integrations must be optional and limited to market leading solutions designed for public integration.</li>
+</ul>
+
+<h2>Getting Started</h2>
 The Web.config file contains a few setting that should be populated before first use:
 
     <add key="org:Name" value="" />
@@ -20,10 +38,8 @@ The Web.config file contains a few setting that should be populated before first
 
 As is, the application will compile and run with a local database under App_Data.  On initial creation an admin-owner account will be created with a random password.  Use the Forgot Password link to reset the password for this account.
 
-As is, the application is designed to work with DonorBox/Stripe & Square.  This will require updating the DonorBox links and setting the appropriate API keys:
+Out-of-the-box the application is designed to work with DonorBox, Stripe &amp; Square.  This will require updating the DonorBox links and setting the appropriate API keys:
     
     <add key="url:DonorBox" value="" />
     <add key="key:Square" value="" />
     <add key="key:Stripe" value="" />
-
-
