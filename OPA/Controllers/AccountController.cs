@@ -69,6 +69,13 @@ namespace OPA.Controllers
         [AllowAnonymous]
         public ActionResult Login(string returnUrl)
         {
+            Logger.Info("Logging in with returnUrl: " + returnUrl);
+
+            if (UserHelper.GetCurrentUser() != null)
+            {
+                return RedirectToLocal(returnUrl);
+            }
+
             ViewBag.ReturnUrl = returnUrl;
             return View();
         }
@@ -84,6 +91,8 @@ namespace OPA.Controllers
             {
                 return View(model);
             }
+
+            Logger.Info("Login attempt with email: " + model.Email + "; " + " returnUrl: " + returnUrl);
 
             // Require the user to have a confirmed email before they can log on.
             if (!await UserManager.IsEmailConfirmedAsync(user.Id))
@@ -182,7 +191,7 @@ namespace OPA.Controllers
         {
             if (userId == null || code == null)
             {
-                return View("Error");
+                return Error("Unable to confirm email, incorrect values supplied");
             }
 
             var result = await UserManager.ConfirmEmailAsync(userId, code);
@@ -235,7 +244,7 @@ namespace OPA.Controllers
         [AllowAnonymous]
         public ActionResult ResetPassword(string code)
         {
-            return code == null ? View("Error") : View();
+            return code == null ? Error("Unable to reset password, incorrect values supplied") : View();
         }
 
         // POST: /Account/ResetPassword

@@ -26,6 +26,10 @@
     else
     {
         <a href="@Utilities.DonorBoxUrl?first_name=@Model.FirstName&last_name=@Model.LastName&email=@User.Identity.Name" class="custom-dbox-popup btn btn-default">Make a donation</a>
+        if (Model.Donations.Any(d => d.RecurringPayment))
+        {
+            <a href="https://donorbox.org/user_session/new?user_session[email]=@User.Identity.Name" class="btn btn-default" target="_blank">Manage my recurring donations</a>
+        }
     }
 </p>
 @if (Model.ProfilePhoto != null)
@@ -340,13 +344,11 @@
             {
                 @Html.ActionLink("Record a donation", "CreateDonation", "Financial", new { personId = Model.Id }, new { @class = "btn btn-default modal-link" })
             }
-            else
+
+            <a href="@Utilities.DonorBoxUrl?first_name=@Model.FirstName&last_name=@Model.LastName&email=@User.Identity.Name" class="custom-dbox-popup btn btn-default">Make a donation</a>
+            @if (Model.Donations.Any(d => d.RecurringPayment))
             {
-                if (Model.Donations.Any(d => d.RecurringPayment))
-                {
-                    <a href="https://donorbox.org/user_session/new" class="btn btn-default" target="_blank">Manage recurring payments</a>
-                }
-                <a href="@Utilities.DonorBoxUrl?first_name=@Model.FirstName&last_name=@Model.LastName&email=@User.Identity.Name" class="custom-dbox-popup btn btn-default">Make a donation</a>
+                <a href="https://donorbox.org/user_session/new?user_session[email]=@User.Identity.Name" class="btn btn-default" target="_blank">Manage my recurring donations</a>
             }
         </p>
 
