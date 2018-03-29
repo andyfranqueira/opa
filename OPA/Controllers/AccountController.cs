@@ -148,9 +148,6 @@ namespace OPA.Controllers
                 {
                     // Send a confirmation email to validate the user account
                     await SendEmailConfirmationTokenAsync(user.Id, "Confirm your account");
-                    ViewBag.DonateEmail = model.Email.ToLower();
-                    ViewBag.Message = "<p>A confirmation email has been sent to you at <strong><em>" + model.Email.ToLower() + "</em></strong> to confirm your account. "
-                                      + "Your account must be confirmed before you can log in.</p>";
 
                     // Look for a matching person record and link to the user account if one is found
                     user.PersonId = UserHelper.FindUserPerson(user);
@@ -175,6 +172,10 @@ namespace OPA.Controllers
                     }
 
                     await Utilities.AsyncSendEmail(UserHelper.GetAdminEmails(), "New user account", emailBody);
+
+                    ViewBag.Message = "<p>A confirmation email has been sent to you at <strong><em>" + model.Email.ToLower() + "</em></strong> to confirm your account. "
+                                      + "Your account must be confirmed before you can log in.</p>";
+                    ViewBag.DonationForm = PaymentHelper.GetDonationForm(user, null);
                     return View("Info");
                 }
 

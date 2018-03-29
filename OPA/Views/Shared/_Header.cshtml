@@ -37,7 +37,6 @@
                             @if (User.IsInRole("Admin"))
                             {
                                 <li>@Html.ActionLink("Admin", "Index", "Home")</li>
-                                <li><a href="@Utilities.DonorBoxUrl?email=@User.Identity.Name" class="custom-dbox-popup">Make a Donation</a></li>
                             }
                             <li>@Html.ActionLink("My Account", "Index", "Manage", routeValues: null, htmlAttributes: new {title = "Manage"})</li>
                             <li>

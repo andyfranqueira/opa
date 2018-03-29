@@ -18,13 +18,11 @@ namespace OPA.Payments
         {
             string donorName;
             string donorEmail;
-            string donorId;
             string designation;
             string recurringDonation;
 
             charge.Metadata.TryGetValue("donorbox_name", out donorName);
             charge.Metadata.TryGetValue("donorbox_email", out donorEmail);
-            charge.Metadata.TryGetValue("donorbox_donor_id", out donorId);
             charge.Metadata.TryGetValue("donorbox_designation", out designation);
             charge.Metadata.TryGetValue("donorbox_recurring_donation", out recurringDonation);
 
@@ -34,7 +32,6 @@ namespace OPA.Payments
                 Source = "DonorBox",
                 DonorName = donorName,
                 DonorEmail = donorEmail,
-                DonorId = donorId,
                 PaymentMethod = GetPaymentMethod(charge),
                 Amount = decimal.Divide(transaction.Amount, 100),
                 Fee = decimal.Divide(transaction.Fee, 100),

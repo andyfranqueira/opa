@@ -1,5 +1,4 @@
-﻿@using OPA.BusinessLogic
-@**
+﻿@**
     *  Copyright 2018 Andrew Franqueira
     *
     *  This file is part of OPA.
@@ -19,10 +18,10 @@
 <div id="main-content" class="col-md-8">
     <div>@Html.Raw(ViewBag.Message)</div>
 
-    @if (ViewBag.DonateEmail != null)
+    @if (ViewBag.DonationForm != null)
     {
         <p>In the meantime if you would like to make a donation please click on the link below.</p>
-        <a href="@Utilities.DonorBoxUrl?email=@ViewBag.DonateEmail" class="custom-dbox-popup btn btn-default">Make a Donation</a>
+        <a href="@ViewBag.DonationForm" class="custom-dbox-popup btn btn-default">Make a donation</a>
     }
 </div>
 

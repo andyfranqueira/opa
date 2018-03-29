@@ -1,4 +1,6 @@
-﻿@**
+﻿@using Microsoft.Ajax.Utilities
+@using OPA.BusinessLogic
+@**
     *  Copyright 2018 Andrew Franqueira
     *
     *  This file is part of OPA.
@@ -22,7 +24,10 @@
         <p>@Html.ActionLink("List Organizations", "Index", "Organization", null, new {@class = "btn btn-default"})</p>
         <br/>
         <h2>Financials</h2>
-        <p>@Html.ActionLink("Electronic Payments", "Index", "Payment", null, new {@class = "btn btn-default"})</p>
+        @if (!Utilities.StripeKey.IsNullOrWhiteSpace() || !Utilities.SquareKey.IsNullOrWhiteSpace())
+        {
+            <p>@Html.ActionLink("Electronic Payments", "Index", "Payment", null, new {@class = "btn btn-default"})</p>
+        }
         <p>@Html.ActionLink("Batch Donations", "BatchDonations", "Financial", null, new {@class = "btn btn-default"})</p>
         <p>@Html.ActionLink("List Donations", "Donations", "Financial", null, new {@class = "btn btn-default"})</p>
         <p>@Html.ActionLink("List Pledges", "Pledges", "Financial", null, new {@class = "btn btn-default"})</p>
@@ -30,18 +35,31 @@
     </div>
 
     <div class="col-md-6">
-        <h2>Payment Processors</h2>
-        <p><a href="https://donorbox.org/org_session/new" target="_blank" class="btn btn-default">DonorBox</a></p>
-        <p><a href="https://dashboard.stripe.com/login" target="_blank" class="btn btn-default">Stripe</a></p>
-        <p><a href="https://squareup.com/login" target="_blank" class="btn btn-default">Square</a></p>
         @if (ViewBag.IsOwnerAdmin)
         {
-            <br/>
             <h2>Administrator Functions</h2>
             <p>@Html.ActionLink("Manage Users", "ManageUsers", "Manage", null, new { @class = "btn btn-default" })</p>
             <p>@Html.ActionLink("Manage Value Sets", "ValueSets", "Home", null, new { @class = "btn btn-default" })</p>
             <p>@Html.ActionLink("Don't Panic", "GetRawData", "Home", null, new { @class = "btn btn-default" })</p>
             <p>@Html.ActionLink("View Log", "LogFile", "Home", null, new { @class = "btn btn-default" })</p>
+            <br />
+        }
+
+        @if (!Utilities.DonationOrgAcctUrl.IsNullOrWhiteSpace() || !Utilities.StripeKey.IsNullOrWhiteSpace() || !Utilities.SquareKey.IsNullOrWhiteSpace())
+        {
+            <h2>Payment Processors</h2>
+        }
+        @if (!Utilities.DonationOrgAcctUrl.IsNullOrWhiteSpace())
+        {
+            <p><a href="@Utilities.DonationOrgAcctUrl" target="_blank" class="btn btn-default">Donation Platform</a></p>
+        }
+        @if (!Utilities.StripeKey.IsNullOrWhiteSpace())
+        {
+            <p><a href="https://dashboard.stripe.com" target="_blank" class="btn btn-default">Stripe</a></p>
+        }
+        @if (!Utilities.SquareKey.IsNullOrWhiteSpace())
+        {
+            <p><a href="https://squareup.com" target="_blank" class="btn btn-default">Square</a></p>
         }
     </div>
 </div>

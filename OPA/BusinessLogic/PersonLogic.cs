@@ -42,11 +42,6 @@ namespace OPA.BusinessLogic
             return Database.ApplicationUsers.FirstOrDefault(u => u.Email == email)?.Person;
         }
 
-        public Person GetPersonByDonorId(string donorId)
-        {
-            return Database.People.FirstOrDefault(p => p.DonorId == donorId);
-        }
-
         public bool IsMarried(int personId)
         {
             return Database.Couples.Any(c => c.Person1Id == personId || c.Person2Id == personId);

@@ -30,7 +30,6 @@ namespace OPA.Models
             Source = payment.Source;
             DonorName = payment.DonorName;
             DonorEmail = payment.DonorEmail;
-            DonorId = payment.DonorId;
             PaymentMethod = payment.PaymentMethod;
             Amount = payment.Amount;
             Fee = payment.Fee;
@@ -52,7 +51,6 @@ namespace OPA.Models
 
         [Display(Name = "Donor Email")]
         public string DonorEmail { get; set; }
-        public string DonorId { get; set; }
 
         [Display(Name = "Payment Method")]
         public string PaymentMethod { get; set; }

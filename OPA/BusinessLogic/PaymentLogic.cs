@@ -9,10 +9,11 @@
 // </copyright>
 
 using System;
-using System.Configuration;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using log4net;
+using Microsoft.Ajax.Utilities;
 using OPA.DataAccess;
 using OPA.Entities;
 using OPA.Payments;
@@ -21,8 +22,6 @@ namespace OPA.BusinessLogic
 {
     public class PaymentLogic
     {
-        private static readonly string SquareKey = ConfigurationManager.AppSettings["key:Square"];
-        private static readonly string StripeKey = ConfigurationManager.AppSettings["key:Stripe"];
         private static readonly ILog Logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public PaymentLogic(OpaContext database, PersonLogic personHelper)
@@ -33,6 +32,50 @@ namespace OPA.BusinessLogic
 
         protected OpaContext Database { get; set; }
         protected PersonLogic PersonHelper { get; set; }
+
+        public string GetDonationForm(ApplicationUser user, Person person)
+        {
+            if (Utilities.DonationFormUrl.IsNullOrWhiteSpace())
+            {
+                return null;
+            }
+
+            if (person == null)
+            {
+                return Utilities.DonationFormUrl
+                    + "&email=" + user.Email;
+            }
+
+            if (user.PersonId != person.Id)
+            {
+                return null;
+            }
+
+            if (Utilities.DonationFormUrl.Contains("donorbox"))
+            {
+                return Utilities.DonationFormUrl
+                       + "&first_name=" + person.FirstName
+                       + "&last_name=" + person.LastName
+                       + "&email=" + user.Email;
+            }
+
+            return Utilities.DonationFormUrl;
+        }
+
+        public string GetDonationUserAcctUrl(ApplicationUser user, Person person)
+        {
+            if (user.PersonId != person.Id || Utilities.DonationUserAcctUrl.IsNullOrWhiteSpace())
+            {
+                return null;
+            }
+
+            if (Utilities.DonationUserAcctUrl.Contains("donorbox"))
+            {
+                return Utilities.DonationUserAcctUrl + "?user_session[email]=" + user.Email;
+            }
+
+            return Utilities.DonationUserAcctUrl;
+        }
 
         public void LoadNewPayments()
         {
@@ -46,12 +89,19 @@ namespace OPA.BusinessLogic
             }
 
             var ids = payments.Select(p => p.TransactionId);
+            var transactions = new List<Transaction>();
 
-            Logger.Info("Get Square Transactions");
-            var transactions = PaymentManager.GetSquareTransactions(SquareKey, startDate, endDate);
+            if (!Utilities.StripeKey.IsNullOrWhiteSpace())
+            {
+                Logger.Info("Get Donor Box Transactions");
+                transactions.AddRange(PaymentManager.GetDonorBoxTransactions(Utilities.StripeKey, startDate, endDate));
+            }
 
-            Logger.Info("Get Donor Box Transactions");
-            transactions.AddRange(PaymentManager.GetDonorBoxTransactions(StripeKey, startDate, endDate));
+            if (!Utilities.SquareKey.IsNullOrWhiteSpace())
+            {
+                Logger.Info("Get Square Transactions");
+                transactions.AddRange(PaymentManager.GetSquareTransactions(Utilities.SquareKey, startDate, endDate));
+            }
 
             foreach (var transaction in transactions)
             {
@@ -67,7 +117,7 @@ namespace OPA.BusinessLogic
 
         public void ProcessPayments()
         {
-            var unprocessedPayments = Database.Payments.Where(p => !p.Donations.Any()).ToList();
+            var unprocessedPayments = Database.Payments.Where(p => p.Source != "Square" && !p.Donations.Any()).ToList();
 
             foreach (var payment in unprocessedPayments)
             {
@@ -87,7 +137,6 @@ namespace OPA.BusinessLogic
                 Source = transaction.Source,
                 DonorName = transaction.DonorName,
                 DonorEmail = transaction.DonorEmail,
-                DonorId = transaction.DonorId,
                 PaymentMethod = transaction.PaymentMethod,
                 Amount = transaction.Amount,
                 Fee = transaction.Fee,
@@ -102,25 +151,9 @@ namespace OPA.BusinessLogic
 
         public Person GetDonor(Payment payment)
         {
-            Person person = null;
-
-            if (!string.IsNullOrWhiteSpace(payment.DonorId))
-            {
-                person = PersonHelper.GetPersonByDonorId(payment.DonorId);
-            }
-
-            if (person == null && !string.IsNullOrWhiteSpace(payment.DonorEmail))
-            {
-                person = PersonHelper.GetPersonByUserEmail(payment.DonorEmail);
-
-                if (person != null && !string.IsNullOrWhiteSpace(payment.DonorId))
-                {
-                    person.DonorId = payment.DonorId;
-                    Database.SaveChanges();
-                }
-            }
-
-            return person;
+            return !string.IsNullOrWhiteSpace(payment.DonorEmail) ? 
+                PersonHelper.GetPersonByUserEmail(payment.DonorEmail) : 
+                null;
         }
 
         public void RecordPaymentAsDonation(Payment payment, int personId, string fund, string designation, decimal amount)

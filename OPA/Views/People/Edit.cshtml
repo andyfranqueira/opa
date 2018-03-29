@@ -8,7 +8,6 @@
     *  @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
 *@
 
-@using OPA.BusinessLogic
 @using OPA.Entities
 @model OPA.Models.PersonViewModel
 
@@ -18,20 +17,23 @@
 }
 
 <p class="pull-right">
+    @if (ViewBag.DonationForm != null)
+    {
+        <a href="@ViewBag.DonationForm" class="custom-dbox-popup btn btn-default">Make a donation</a>
+
+        if (ViewBag.DonationUserAcct != null && Model.Donations.Any(d => d.RecurringPayment))
+        {
+            <a href="@ViewBag.DonationUserAcct" class="btn btn-default" target="_blank">Manage my recurring donations</a>
+        }
+    }
+
     @if (User.IsInRole("Admin"))
     {
         <span id="sensitive-data" class="btn btn-default">Hide sensitive data</span>
         @Html.ActionLink("Back to list of people", "Index", null, new { @class = "btn btn-default" })
     }
-    else
-    {
-        <a href="@Utilities.DonorBoxUrl?first_name=@Model.FirstName&last_name=@Model.LastName&email=@User.Identity.Name" class="custom-dbox-popup btn btn-default">Make a donation</a>
-        if (Model.Donations.Any(d => d.RecurringPayment))
-        {
-            <a href="https://donorbox.org/user_session/new?user_session[email]=@User.Identity.Name" class="btn btn-default" target="_blank">Manage my recurring donations</a>
-        }
-    }
 </p>
+
 @if (Model.ProfilePhoto != null)
 {
     <a href='@Url.Action("ProfilePhoto", "People", new { id = Model.Id })'><img src="@Model.ProfilePhoto" class="thumbnail pull-left" alt="Profile photo"></a>
@@ -344,12 +346,6 @@
             {
                 @Html.ActionLink("Record a donation", "CreateDonation", "Financial", new { personId = Model.Id }, new { @class = "btn btn-default modal-link" })
             }
-
-            <a href="@Utilities.DonorBoxUrl?first_name=@Model.FirstName&last_name=@Model.LastName&email=@User.Identity.Name" class="custom-dbox-popup btn btn-default">Make a donation</a>
-            @if (Model.Donations.Any(d => d.RecurringPayment))
-            {
-                <a href="https://donorbox.org/user_session/new?user_session[email]=@User.Identity.Name" class="btn btn-default" target="_blank">Manage my recurring donations</a>
-            }
         </p>
 
         <table id="donations-table" class="table table-hover">
@@ -359,6 +355,7 @@
                     <th>@Html.DisplayNameFor(model => model.Donations[0].Amount)</th>
                     <th>@Html.DisplayNameFor(model => model.Donations[0].Fund)</th>
                     <th>@Html.DisplayNameFor(model => model.Donations[0].Designation)</th>
+                    <th>@Html.DisplayNameFor(model => model.Donations[0].RecurringPayment)</th>
                     @if (User.IsInRole("Admin") && Model.Donations.Any())
                     {
                         <th>Action</th>
@@ -384,6 +381,7 @@
                             </td>
                             <td>@donation.Fund</td>
                             <td class="break-line">@Html.DisplayFor(modelItem => donation.Designation)</td>
+                            <td class="break-line">@Html.DisplayFor(modelItem => donation.RecurringPayment)</td>
                             @if (User.IsInRole("Admin") && Model.Donations.Any())
                             {
                                 <td>

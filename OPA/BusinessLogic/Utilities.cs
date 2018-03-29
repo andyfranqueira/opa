@@ -38,9 +38,14 @@ namespace OPA.BusinessLogic
         public static readonly string AppName = ConfigurationManager.AppSettings["app:Name"];
         public static readonly string OwnerEmail = ConfigurationManager.AppSettings["app:Owner"];
 
-        public static readonly string DonorBoxUrl = ConfigurationManager.AppSettings["url:DonorBox"];
         public static readonly string SmtpEmail = ConfigurationManager.AppSettings["smtp:Email"];
         public static readonly string SmtpName = ConfigurationManager.AppSettings["smtp:Name"];
+
+        public static readonly string DonationFormUrl = ConfigurationManager.AppSettings["url:DonationForm"];
+        public static readonly string DonationOrgAcctUrl = ConfigurationManager.AppSettings["url:DonationOrgAcct"];
+        public static readonly string DonationUserAcctUrl = ConfigurationManager.AppSettings["url:DonationUserAcct"];
+        public static readonly string StripeKey = ConfigurationManager.AppSettings["key:Stripe"];
+        public static readonly string SquareKey = ConfigurationManager.AppSettings["key:Square"];
 
         private static readonly MailAddress MailFrom = new MailAddress(SmtpEmail, SmtpName);
         private static readonly string SmtpHost = ConfigurationManager.AppSettings["smtp:Host"];

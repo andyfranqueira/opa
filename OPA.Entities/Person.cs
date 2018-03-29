@@ -27,7 +27,6 @@ namespace OPA.Entities
         public int? LegacyFamilyId { get; set; }
         public int? FatherId { get; set; }
         public int? MotherId { get; set; }
-        public string DonorId { get; set; }
 
         public virtual ICollection<Contact> Contacts { get; set; }
         public virtual ICollection<ContactAddress> ContactAddresses { get; set; }

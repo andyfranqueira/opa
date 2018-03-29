@@ -178,10 +178,10 @@ namespace OPA.Models
 
             if (donation.Payment != null)
             {
-                PaymentInfo = donation.Payment.PaymentMethod + "<br/>" 
+                PaymentInfo = donation.Payment.DonorName + "<br/>"
+                    + donation.Payment.PaymentMethod + "<br/>"
                     + donation.Payment.TransactionDate + "<br/>" 
-                    + "$" + donation.Payment.Amount + "<br/>" 
-                    + "Recurring: " + (donation.Payment.RecurringDonation ? "Yes" : "No");
+                    + "$" + donation.Payment.Amount;
 
                 RecurringPayment = donation.Payment.RecurringDonation;
             }

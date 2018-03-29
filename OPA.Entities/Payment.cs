@@ -20,7 +20,6 @@ namespace OPA.Entities
         public string Source { get; set; }
         public string DonorName { get; set; }
         public string DonorEmail { get; set; }
-        public string DonorId { get; set; }
         public string PaymentMethod { get; set; }
         public decimal Amount { get; set; }
         public decimal Fee { get; set; }

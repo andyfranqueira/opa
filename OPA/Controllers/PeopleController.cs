@@ -135,6 +135,9 @@ namespace OPA.Controllers
             model.Donations = FinancialHelper.GetDonations(person.Id, model.Spouse?.Id).Select(d => new DonationViewModel(d)).ToList();
 
             ViewBag.MemberTypeList = PersonHelper.GetMemberTypeList();
+            ViewBag.DonationForm = PaymentHelper.GetDonationForm(UserHelper.GetCurrentUser(), person);
+            ViewBag.DonationUserAcct = PaymentHelper.GetDonationUserAcctUrl(UserHelper.GetCurrentUser(), person);
+
             return View(model);
         }
 
@@ -143,15 +146,19 @@ namespace OPA.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "Id,LastName,FirstName,MiddleName,Sex,DateOfBirth,MemberType,Active")] PersonViewModel model)
         {
+            var person = Database.People.Find(model.Id);
+
             if (ModelState.IsValid)
             {
-                var person = Database.People.Find(model.Id);
                 model.UpdatePerson(person);
                 Database.SaveChanges();
                 return RedirectToAction("Edit", new { id = person.Id, success = true });
             }
 
             ViewBag.MemberTypeList = PersonHelper.GetMemberTypeList();
+            ViewBag.DonationForm = PaymentHelper.GetDonationForm(UserHelper.GetCurrentUser(), person);
+            ViewBag.DonationUserAcct = PaymentHelper.GetDonationUserAcctUrl(UserHelper.GetCurrentUser(), person);
+
             return View(model);
         }
 
