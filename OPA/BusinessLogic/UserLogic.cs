@@ -8,9 +8,11 @@
 //   @license GPL-3.0+ http://spdx.org/licenses/GPL-3.0+
 // </copyright>
 
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Principal;
 using System.Web;
+using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
@@ -89,6 +91,24 @@ namespace OPA.BusinessLogic
             }
 
             return null;
+        }
+
+        public List<SelectListItem> GetUnassignedPeopleList(int? personId)
+        {
+            var assignedPersonIds = Database.ApplicationUsers
+                .Where(u => u.PersonId != null && u.PersonId != personId)
+                .Select(u => u.PersonId)
+                .ToList();
+
+            return Database.People
+                .Where(p => !p.LastName.Contains("Anonymous") && !assignedPersonIds.Contains(p.Id))
+                .Select(p => new SelectListItem
+                {
+                    Value = p.Id.ToString(),
+                    Text = p.LastName + ", " + p.FirstName
+                })
+                .OrderBy(i => i.Text)
+                .ToList();
         }
 
         private string AdminRoleId()

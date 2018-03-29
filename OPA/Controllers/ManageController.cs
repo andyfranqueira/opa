@@ -12,6 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using Microsoft.Ajax.Utilities;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
@@ -219,6 +220,7 @@ namespace OPA.Controllers
         {
             var user = Database.ApplicationUsers.Find(id);
             var model = new UserViewModel(user, UserHelper);
+            ViewBag.UnassignedPeopleList = UserHelper.GetUnassignedPeopleList(user.PersonId);
             return PartialView(model);
         }
 
@@ -230,8 +232,20 @@ namespace OPA.Controllers
         {
             if (!ModelState.IsValid)
             {
+                ViewBag.UnassignedPeopleList = UserHelper.GetUnassignedPeopleList(model.PersonId);
                 return PartialView(model);
             }
+
+            var user = Database.ApplicationUsers.Find(model.Id);
+
+            if (!model.UserName.IsNullOrWhiteSpace())
+            {
+                user.UserName = model.UserName;
+                user.Email = model.UserName;
+            }
+
+            user.PersonId = model.PersonId;
+            Database.SaveChanges();
 
             if (model.Admin)
             {
