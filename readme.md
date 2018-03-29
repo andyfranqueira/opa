@@ -38,8 +38,10 @@ The Web.config file contains a few setting that should be populated before first
 
 As is, the application will compile and run with a local database under App_Data.  On initial creation an admin-owner account will be created with a random password.  Use the Forgot Password link to reset the password for this account.
 
-Out-of-the-box the application is designed to work with DonorBox, Stripe &amp; Square.  This will require updating the DonorBox links and setting the appropriate API keys:
+Out-of-the-box the application is designed to work with DonorBox, Stripe &amp; Square.  Any combination can be activated by setting the donation platform links and the appropriate API keys:
     
-    <add key="url:DonorBox" value="" />
-    <add key="key:Square" value="" />
+    <add key="url:DonationForm" value="" />
+    <add key="url:DonationOrgAcct" value=""/>
+    <add key="url:DonationUserAcct" value=""/>
     <add key="key:Stripe" value="" />
+    <add key="key:Square" value="" />
