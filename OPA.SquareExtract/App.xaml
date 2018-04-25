@@ -1,0 +1,29 @@
+﻿<Application x:Class="OPA.SquareExtract.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             StartupUri="MainWindow.xaml">
+
+    <Application.Resources>
+        <Style x:Key="OpaButton" TargetType="{x:Type Button}">
+            <Setter Property="Background" Value="#071d49"/>
+            <Setter Property="Foreground" Value="#ffffff"/>
+            <Setter Property="FontFamily" Value="Helvetica"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border CornerRadius="8,8,8,8" Background="{TemplateBinding Background}" BorderBrush="#111111" BorderThickness="1">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#444444"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Application.Resources>
+
+</Application>
