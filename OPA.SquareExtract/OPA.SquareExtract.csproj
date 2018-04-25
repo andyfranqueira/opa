@@ -126,9 +126,6 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="favicon.ico" />
   </ItemGroup>
   <ItemGroup>

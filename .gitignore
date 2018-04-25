@@ -241,3 +241,4 @@ ModelManifest.xml
 # FAKE - F# Make
 .fake/
 /OPA/App_Data/OPA.zip
+/bfg.jar
